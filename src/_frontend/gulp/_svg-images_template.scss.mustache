@@ -1,0 +1,13 @@
+[class^="svg-"], [class*=" svg-"] {
+    background-repeat: no-repeat;
+    display: inline-block;
+    vertical-align: center;
+    line-height: 1em;
+    width: 1em;
+    height: 1em;
+}
+{{#items}}
+.svg-{{slug}} {
+    background-image: url('{{{datauri}}}');
+}
+{{/items}}

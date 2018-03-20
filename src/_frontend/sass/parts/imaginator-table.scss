@@ -1,0 +1,26 @@
+.ui {
+	.table {
+		&--thumbnail {
+			width: 100px;
+			&-img {
+				height: 40px;
+				width: 85px;
+				display: block;
+				margin: 0;
+			}
+		}
+		&--delete {
+			&-action {
+				width: 45px;
+			}
+			&-form {
+				margin: 0;
+			}
+		}
+		&--info {
+			width: 200px;
+			text-align: right !important;
+		}
+
+	}
+}

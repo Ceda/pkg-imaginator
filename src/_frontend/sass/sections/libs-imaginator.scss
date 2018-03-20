@@ -1,0 +1,13 @@
+@import "node_modules/sweetalert2/dist/sweetalert2";
+
+.imaginator-lightbox {
+	width: 100%;
+	height: 90vh;
+	border: none;
+}
+
+.swal2-close {
+	&:focus {
+		outline: none;
+	}
+}
