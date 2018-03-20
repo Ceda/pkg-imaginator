@@ -4,6 +4,7 @@ namespace Bistroagency\Imaginator;
 
 use Bistroagency\Imaginator\Commands\CleanFiles;
 use Bistroagency\Imaginator\Commands\Refresh;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 
 class ImaginatorServiceProvider extends ServiceProvider
@@ -18,7 +19,16 @@ class ImaginatorServiceProvider extends ServiceProvider
 		/*
 		* Register helpers if needed.
 		*/
-		require_once __DIR__ . '/Helpers/common.php';
+		$commonHelpersDir = __DIR__ . '/Helpers/common';
+		if(File::exists($commonHelpersDir)) {
+			$files = File::allFiles($commonHelpersDir);
+			foreach($files as $file) {
+				$functionName = str_replace('.php', '', $file->getFilename());
+				if(!function_exists($functionName)) {
+					require_once $commonHelpersDir.'/'.$file->getFileName();
+				}
+			}
+		}
 		if (!function_exists('push_flash')) {
 			require_once __DIR__ . '/Helpers/alerts.php';
 		}
