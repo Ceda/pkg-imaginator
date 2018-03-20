@@ -98,13 +98,16 @@
 					</div>
 					<div v-for="variation in variations">
 						<div class="ui large basic fluid button imaginator-create__variation"
-							 style="margin-bottom:15px;text-align:left;"
+							 style="margin-bottom:15px;text-align:left;position:relative;line-height:1.5em"
 							 @click="selectVariation(variation)"
 							 :id="variation.id"
 							 :class="{'teal': variation.isSelected, 'disabled': !hasAllSources || hasSomeWithoutSources}"
 						>
 							<i class="square outline icon" :class="{'check': variation.isSelected}"></i>
 							@{{ variation.name }}
+							<div class="variation-size">
+								Finální velikost: @{{ variation.width }}&times;@{{ variation.height }}
+							</div>
 						</div>
 					</div>
 
@@ -115,6 +118,14 @@
 							style="text-align:left; margin-bottom:15px;">
 						<i class="folder open icon"></i>
 						Vybrat soubor pro @{{ numberOfSelected }} variace
+					</button>
+
+					<button class="fluid large teal ui button"
+							@click="getAllCroppedImages"
+							v-if="isSomethingResizing"
+							style="text-align:left;">
+						<i class="check icon icon"></i>
+						Ořezat všechny variace
 					</button>
 
 				</div>

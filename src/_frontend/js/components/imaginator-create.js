@@ -414,6 +414,13 @@ const ImaginatorCreate = {
 						}, 50);
 					});
 				},
+
+				getAllCroppedImages() {
+					let resizingVariations = _.filter(this.variations, {isResizing: true});
+					resizingVariations.forEach((variation) => {
+						this.getCroppedImage(variation);
+					});
+				}
 			},
 
 
