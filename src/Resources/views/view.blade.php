@@ -38,7 +38,7 @@
 								   class="imaginator-view__item-image"
 								   @click="exitLightbox"
 								   data-imaginator-id="{{ $imaginator->id }}">
-									<img src="{{ $imaginator->getPreviewImageUrl() }}">
+									<img src="{{ $imaginator->getPreviewImageUrl() }}" style="width:auto;">
 								</a>
 							@endif
 							<div class="imaginator-view__item-name">
