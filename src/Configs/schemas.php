@@ -2,12 +2,21 @@
 
 return [
 	[
+		/*
+		* Imaginator template info
+		*/
 		'name' => 'gallery',
-		'label' => 'Galerie',
+		'label' => 'Gallery',
 		'description' => null,
-		'variations' => [
+		/*
+		* Imaginator variations
+		*/
+		'variations' => [ //acts as a wrapper around all variations, all variations have to be defined in it
+			/*
+			* One Imaginator variation
+			*/
 			[
-				'name' => 'Obrázek',
+				'name' => 'Picture',
 				'breakpoint' => 't',
 				'density' => 'regular',
 				'locale' => 'all',
@@ -15,6 +24,7 @@ return [
 				'width' => 1920,
 				'height' => 768,
 				'hasRetina' => true,
+				'hasTranslation' => false,
 			],
 		],
 	],
