@@ -1,6 +1,7 @@
 # Imaginator #
 
 ## Installation
+
 **How to add this package to your app**
 
 Add the following lines to the root of your composer.json:
@@ -25,7 +26,16 @@ Run composer update
     composer update
     
 ## Usage
+
 **Congratulations! Now you installed Imaginator. What now? You might be asking...**
 
 This is where the fun truly begins.
+
+## Contributing
+
+**Please note these few steps while contributing**
+
+* The src/assets/dist folder should always be commited to git.
+* Before a commit compile assets with the `gulp prod` command while in the src/_frontend folder.
+* The final assets should be minified without sourcemaps to achieve the best results.
 
