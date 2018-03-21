@@ -19,16 +19,7 @@ class ImaginatorServiceProvider extends ServiceProvider
 		/*
 		* Register helpers if needed.
 		*/
-		$commonHelpersDir = __DIR__ . '/Helpers/common';
-		if(File::exists($commonHelpersDir)) {
-			$files = File::allFiles($commonHelpersDir);
-			foreach($files as $file) {
-				$functionName = str_replace('.php', '', $file->getFilename());
-				if(!function_exists($functionName)) {
-					require_once $commonHelpersDir.'/'.$file->getFileName();
-				}
-			}
-		}
+		require_once __DIR__.'/Helpers/common.php';
 		if (!function_exists('push_flash')) {
 			require_once __DIR__ . '/Helpers/alerts.php';
 		}

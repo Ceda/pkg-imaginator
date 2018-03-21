@@ -20,5 +20,10 @@
         "post-update-cmd": [
             "cd src/_frontend && npm update && gulp prod"
         ]
+    },
+    "autoload": {
+        "psr-4": {
+            "Bistroagency\\Imaginator\\": "src/"
+        }
     }
 }
