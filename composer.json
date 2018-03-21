@@ -6,6 +6,10 @@
         {
             "name": "Patrik Jánosdeák",
             "email": "patrik.janosdeak@bistroagency.cz"
+        },
+        {
+            "name": "Jan Chládek",
+            "email": "jan.chladek@bistroagency.cz"
         }
     ],
     "minimum-stability": "dev",
