@@ -18,7 +18,7 @@
 						Přidat
 					</a>
 					<a class="item
-					   @if(Route::current()->getName() == 'imaginator.view') active @endif">
+					   @if(Route::current()->getName() == config('imaginator.app.routes.as').'view') active @endif">
 						<i class="list icon"></i>
 						Přehled
 					</a>
@@ -32,12 +32,17 @@
 					@foreach($imaginators as $imaginator)
 						<div class="imaginator-view__item">
 							@if(!$imaginator->imaginator_sources->count() && !$imaginator->getPreviewImageUrl())
-								<div class="imaginator-view__item-placeholder"></div>
+								<a href="#"
+								   class="imaginator-view__item-image"
+								   @click.prevent="exitLightbox({{ $imaginator->id }})"
+								>
+									<div class="imaginator-view__item-placeholder"></div>
+								</a>
 							@else
 								<a href="#"
 								   class="imaginator-view__item-image"
-								   @click="exitLightbox"
-								   data-imaginator-id="{{ $imaginator->id }}">
+								   @click.prevent="exitLightbox({{ $imaginator->id }})"
+								>
 									<img src="{{ $imaginator->getPreviewImageUrl() }}" style="width:auto;">
 								</a>
 							@endif

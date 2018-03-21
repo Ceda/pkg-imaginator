@@ -8,7 +8,7 @@
 			<div class="fourteen wide column">
 				<div class="ui tabular menu">
 					<a class="item
-					   @if(Route::current()->getName() =='imaginator.create') active @endif">
+					   @if(Route::current()->getName() == config('imaginator.app.routes.as').'create') active @endif">
 						<i class="plus icon"></i>
 						Přidat
 					</a>
