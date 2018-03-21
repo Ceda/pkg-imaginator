@@ -9,6 +9,7 @@ use Bistroagency\Imaginator\Models\ImaginatorVariation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ImaginatorLogic extends Controller
 {
@@ -154,7 +155,7 @@ class ImaginatorLogic extends Controller
 		$imaginators = $this->getImaginatorModel()::getValidatedPaginated($imaginatorTemplate);
 
 		if (count($imaginators->items()) < 1) {
-			$imaginators = [];
+			$imaginators = new LengthAwarePaginator([], count([]), 20);
 		}
 
 		return view('imaginator::view', [

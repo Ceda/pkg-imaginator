@@ -91,14 +91,15 @@
 		background-size: 150px;
 		background-repeat: repeat;
 		position: relative;
+		display: flex;
+		align-items: center;
 
 		img {
 			max-width: 100%;
 			max-height: 100%;
 			position: relative;
-			top: 50%;
 			left: 50%;
-			transform: translate(-50%, -50%);
+			transform: translateX(-50%);
 		}
 
 		&.is-selected {
@@ -155,6 +156,14 @@
 		&.is-selected {
 			background: forestgreen;
 			color: white;
+		}
+
+		.variation-size {
+			bottom: 2px;
+			color: gray;
+			line-height: 1.5;
+			font-size: 10px;
+			left: 50px;
 		}
 	}
 
