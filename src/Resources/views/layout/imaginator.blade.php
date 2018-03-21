@@ -20,14 +20,6 @@
 	<link href="{{ asset_versioned('assets/imaginator/dist/css/parts.css') }}" rel="stylesheet">
 
 	<script>
-		var SHR = {
-			environment: '{{ app()->environment() }}',
-			baseUrl: '{{ url('/') }}',
-			storageUrl: '{{ url('/') }}/storage',
-			assetsUrl: '{{ url('/') }}/assets',
-			apiUrl: '{{ url('/') }}/api',
-		};
-
 		var IMAGINATOR = {
 			uploadUrl: '{{ route('imaginator.upload') }}',
 			storeUrl: '{{ route('imaginator.store') }}',
