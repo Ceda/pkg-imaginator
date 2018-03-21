@@ -116,6 +116,71 @@ This is where the fun truly begins.
  * Now after clicking on the input you should see the Imaginator popping up. Now you are ready to use the Imaginator however you like!
  * CREATE SOMETHING AWESOME!
  
+ ## Configuration
+ 
+ **How to properly configure things**
+ 
+ * In the above mentioned steps you learned about the existence of the `imaginator/app.php` and `imaginator/schemas.php` files.
+ * These are what we use as configuration files. You learned the purpose of the `imaginator/schemas.php` file in the **Usage** section.
+ * Now to the configuration of the app itself. You'll need to navigate to the `imaginator/app.php` file.
+ * It should look like this:
+ 
+ ```
+ 
+    ...
+    <?php
+    
+    return [
+    	'default_locale' => app()->getLocale(),
+    	'locales' => [
+            'cs' => 'cs',
+            'en' => 'en',
+        ],
+    	'model' => \Bistroagency\Imaginator\Models\Imaginator::class,
+    	'breakpoints' => [
+    		't' =>'tiny',
+    		's' => 'small',
+    		'm' => 'medium',
+    		'l' => 'large',
+    		'xl' => 'xlarge',
+    		'xxl' => 'xxlarge',
+    		'fhd' => 'fullhd',
+    	],
+    	'densities' => [
+    		'regular' => [
+    			'scale' => 1,
+    			'suffix' => null,
+    		],
+    		'retina' => [
+    			'scale' => 2,
+    			'suffix' => '@2',
+    		],
+    	],
+    	'anchor_points' => [
+    		'tl' => 'top-left',
+    		't' => 'top',
+    		'tr' => 'top-right',
+    		'l' => 'left',
+    		'c' => 'center',
+    		'r' => 'right',
+    		'bl' => 'bottom-left',
+    		'b' => 'bottom',
+    		'br' => 'bottom-right',
+    	],
+    ];
+    ...
+ 
+ ```
+
+* In this file you can define the default locale, all the locales, the model to use for Imaginator, breakpoints, densities and anchor points for auto-resizing.
+* The Imaginator package uses these as a reference, to check whether you have properly defined the above mentioned options in the `schemas.php` file.
+* Most of this file should be pretty self-explanatory but the `model` setting is the interesting one.
+* In the Imaginator package, we wanted to implement an `$imaginator->isUsed()` function to determine, whether the Imaginators are being used somewhere.
+* Since each project is different this is a difficult task to implement without creating too many unnecessary database request so we decided to implement a way, to overwrite the native `$imaginator->isUsed()` function, which just returns false as of now.
+* It's just as simple as creating a new Model and extending the Imaginator one in the package by it. There you can overwrite the native functions in any way you want.
+* But for the package to use your model, you have to edit the `model` setting in the `app.php` file and setting it as the proper class path to your own Imaginator model in your project.
+* The keys in the `locales, densities` and `anchor points` settings are used in the `schemas.php` file to generate the templates and variations.
+* To access all the setting variables outside of Imaginator, all you have to do is to call the `config()` helper with the `imaginator.` prefix.
     
 ## Contributing
 
