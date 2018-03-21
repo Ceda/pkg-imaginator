@@ -41,8 +41,8 @@ This is where the fun truly begins.
 * As you might have guessed, you define these so called `Imaginator Templates` and `Imaginator Variations` in the `schemas.php` file.
 * I will show you an example of how a properly defined `Imaginator Template` with `Imaginator Variations` should look like.
 
-
-```...
+~~~~
+...
 [
     /*
     * Imaginator template info
@@ -71,7 +71,8 @@ This is where the fun truly begins.
         ],
     ],
 ],
-...```
+...
+~~~~
  
  * After you successfully set up all the templates and variations you need, go to the backend of your project and use the `php artisan imaginator:refresh` command to generate the defined templates and variations.
  * The above mentioned example will generate two variations if and one template if we go by the default config. `Picture` and `Picture - retina`. If we were to set the hasTranslations to true, this would change, generating four variations with the `( locale )` suffixes.
@@ -88,25 +89,27 @@ This is where the fun truly begins.
  * However for the `imaginator-input.js` to work properly, you need to define the `ImaginatorCreateUrl` global variable in js.
  * You can do so by including this code snippet into your project:
  
-
-```...
+~~~~
+...
 <script>
  window.ImaginatorCreateUrl = '{{ route_raw('imaginator.create') }}';
 </script>
-...```
+...
+~~~~
 
  * After you created the global variable, you can just create an input and by clicking on it running the Imaginator.
  * The Imaginator input has to have some required parameters so far. I'll include an example right here
  
- 
-```...
+~~~~ 
+...
 <input type="text" <!-- Input type must be text or number, either should be fine -->
        name="photo" <!-- Name the input whatever you need to -->
        readOnly="readOnly" <!-- For the sake of convenience and safety set the input to be readOnly either through JS or HTML as you see in this example -->
        data-imaginator <!--  !!REQUIRED!! Set the Imaginator to init on this input -->
        data-imaginator-template="gallery" <!-- !!REQUIRED!! Define the template, Imaginator should use to create the Images, this is the Imaginator Template name you defined in schemas -->
  >
-...```
+...
+~~~~
  
  * Now after clicking on the input you should see the Imaginator popping up. Now you are ready to use the Imaginator however you like!
  * CREATE SOMETHING AWESOME!
@@ -120,8 +123,8 @@ This is where the fun truly begins.
  * Now to the configuration of the app itself. You'll need to navigate to the `imaginator/app.php` file.
  * It should look like this:
  
-
-```...
+~~~~
+...
 <?php
 
 return [
@@ -162,7 +165,8 @@ return [
         'br' => 'bottom-right',
     ],
 ];
-...```
+...
+~~~~
 
 * In this file you can define the default locale, all the locales, the model to use for Imaginator, breakpoints, densities and anchor points for auto-resizing.
 * The Imaginator package uses these as a reference, to check whether you have properly defined the above mentioned options in the `schemas.php` file.
