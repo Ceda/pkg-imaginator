@@ -39,7 +39,7 @@ This is where the fun truly begins.
 * Now if you go to your config folder you'll find the `imaginator` folder in there with two files in it.
 * One will be `app.php` and the other is `schemas.php`.
 * As you might have guessed, you define these so called `Imaginator Templates` and `Imaginator Variations` in the `schemas.php` file.
-* I will show you an example of how a properly defined `Imaginator Template` with `Imaginator Variations` should look like.
+* I will show you an example of how a properly define an `Imaginator Template` with `Imaginator Variations` should look like.
 
 ~~~~
 ...
@@ -75,8 +75,8 @@ This is where the fun truly begins.
 ~~~~
  
  * After you successfully set up all the templates and variations you need, go to the backend of your project and use the `php artisan imaginator:refresh` command to generate the defined templates and variations.
- * The above mentioned example will generate two variations if and one template if we go by the default config. `Picture` and `Picture - retina`. If we were to set the hasTranslations to true, this would change, generating four variations with the `( locale )` suffixes.
- * If you make any modifications in the `schemas.php` file in the future, you'll need to run the `php artisan imaginator:refresh` command to regenerate the templates nad variations.
+ * The above mentioned example will generate two variations and one template if we go by the default config. `Picture` and `Picture - retina`. If we were to set the hasTranslations to true, this would change, generating four variations with the `( locale )` suffixes.
+ * If you make any modifications in the `schemas.php` file in the future, you'll need to run the `php artisan imaginator:refresh` command to regenerate the templates and variations.
  * Running this command will not overwrite existing variations, it will only edit them, delete or add new ones. It's completely safe to run it over and over without any modifications. We do so in the deploy process to ensure all the Schemas are properly built on all our environments. 
  * Now you have properly setup your database and you're ready to go the next step.
  * All that's left is to include the assets in your project.
