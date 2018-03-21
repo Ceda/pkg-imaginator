@@ -36,8 +36,8 @@ class AutoResize extends Command
 	public function __construct()
 	{
 		parent::__construct();
-		$this->tempDestination = public_path('storage/imaginator/tmp');
-		$this->destination = public_path('storage/imaginator');
+		$this->tempDestination = config('imaginator.app.storage.tempDestination');
+		$this->destination = config('imaginator.app.storage.destination');
 		$this->startTime = microtime(true);
 	}
 

@@ -118,8 +118,7 @@ This is where the fun truly begins.
  
  **How to properly configure things**
  
- * In the above mentioned steps you learned about the existence of the `imaginator/app.php` and `imaginator/schemas.php` files.
- * These are what we use as configuration files. You learned the purpose of the `imaginator/schemas.php` file in the **Usage** section.
+ * You learned the purpose of the `imaginator/schemas.php` file in the **Usage** section.
  * Now to the configuration of the app itself. You'll need to navigate to the `imaginator/app.php` file.
  * It should look like this:
  
@@ -140,6 +139,10 @@ return [
 		'middlewares' => [
 			'web',
 		],
+	],
+	'storage' => [
+		'tempDestination' => public_path('storage/imaginator/tmp/'),
+		'destination' => public_path('storage/imaginator/'),
 	],
 	'breakpoints' => [
 		't' =>'tiny',
@@ -175,7 +178,7 @@ return [
 ...
 ~~~~
 
-* In this file you can define the default locale, all the locales, the model, rotue properties, breakpoints, densities and anchor points for auto-resizing.
+* Here you can basically edit everything about how the Imaginator works.
 * The Imaginator package uses these as a reference, to check whether you have properly defined the above mentioned options in the `schemas.php` file.
 * Most of this file should be pretty self-explanatory but the `model` setting is the interesting one.
 * In the Imaginator package, we wanted to implement an `$imaginator->isUsed()` function to determine, whether the Imaginators are being used somewhere.

@@ -158,6 +158,9 @@ const ImaginatorCreate = {
 							} else {
 								formData.append('variations', JSON.stringify(this.variations));
 							}
+
+							formData.append('_token', IMAGINATOR.csrf_token);
+
 							this.isLoading = true;
 
 							if (this.numberOfShownThumbnails !== 0) {
@@ -233,6 +236,7 @@ const ImaginatorCreate = {
 						url: IMAGINATOR.storeUrl,
 						dataType: 'json',
 						data: {
+							_token: IMAGINATOR.csrf_token,
 							imaginator: this.imaginator,
 						},
 						success: (response) => {
