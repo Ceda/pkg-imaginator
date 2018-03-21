@@ -18,13 +18,12 @@ const ImaginatorView = {
 			el: ".imaginator-view",
 
 			methods: {
-				exitLightbox(event) {
-					event.preventDefault();
+				exitLightbox(imaginator_id) {
 					if(typeof window.parent.swal === 'undefined') {
 						return;
 					}
 
-					window.parent.lightboxResult = $(event.target).data('imaginator-id');
+					window.parent.lightboxResult = imaginator_id;
 					//click cancel  because .close() or .closeModal() don't call the onClose function
 					window.parent.swal.clickCancel();
 				}
