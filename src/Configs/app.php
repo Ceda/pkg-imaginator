@@ -2,10 +2,17 @@
 
 return [
 	'default_locale' => app()->getLocale(),
-	'model' => \Bistroagency\Imaginator\Models\Imaginator::class,
 	'locales' => [
 		'cs' => 'cs',
 		'en' => 'en',
+	],
+	'model' => \Bistroagency\Imaginator\Models\Imaginator::class,
+	'routes' => [
+		'prefix' => 'imaginator',
+		'as' => 'imaginator.',
+		'middlewares' => [
+			'web',
+		],
 	],
 	'breakpoints' => [
 		't' =>'tiny',

@@ -39,7 +39,7 @@ This is where the fun truly begins.
 * Now if you go to your config folder you'll find the `imaginator` folder in there with two files in it.
 * One will be `app.php` and the other is `schemas.php`.
 * As you might have guessed, you define these so called `Imaginator Templates` and `Imaginator Variations` in the `schemas.php` file.
-* I will show you an example of how a properly defined `Imaginator Template` with `Imaginator Variations` should look like.
+* I will show you an example of how a properly define an `Imaginator Template` with `Imaginator Variations` should look like.
 
 ~~~~
 ...
@@ -75,8 +75,8 @@ This is where the fun truly begins.
 ~~~~
  
  * After you successfully set up all the templates and variations you need, go to the backend of your project and use the `php artisan imaginator:refresh` command to generate the defined templates and variations.
- * The above mentioned example will generate two variations if and one template if we go by the default config. `Picture` and `Picture - retina`. If we were to set the hasTranslations to true, this would change, generating four variations with the `( locale )` suffixes.
- * If you make any modifications in the `schemas.php` file in the future, you'll need to run the `php artisan imaginator:refresh` command to regenerate the templates nad variations.
+ * The above mentioned example will generate two variations and one template if we go by the default config. `Picture` and `Picture - retina`. If we were to set the hasTranslations to true, this would change, generating four variations with the `( locale )` suffixes.
+ * If you make any modifications in the `schemas.php` file in the future, you'll need to run the `php artisan imaginator:refresh` command to regenerate the templates and variations.
  * Running this command will not overwrite existing variations, it will only edit them, delete or add new ones. It's completely safe to run it over and over without any modifications. We do so in the deploy process to ensure all the Schemas are properly built on all our environments. 
  * Now you have properly setup your database and you're ready to go the next step.
  * All that's left is to include the assets in your project.
@@ -128,47 +128,50 @@ This is where the fun truly begins.
 <?php
 
 return [
-    'default_locale' => app()->getLocale(),
-    'locales' => [
-        'cs' => 'cs',
-        'en' => 'en',
-    ],
-    'model' => \Bistroagency\Imaginator\Models\Imaginator::class,
-    'breakpoints' => [
-        't' =>'tiny',
-        's' => 'small',
-        'm' => 'medium',
-        'l' => 'large',
-        'xl' => 'xlarge',
-        'xxl' => 'xxlarge',
-        'fhd' => 'fullhd',
-    ],
-    'densities' => [
-        'regular' => [
-            'scale' => 1,
-            'suffix' => null,
-        ],
-        'retina' => [
-            'scale' => 2,
-            'suffix' => '@2',
-        ],
-    ],
-    'anchor_points' => [
-        'tl' => 'top-left',
-        't' => 'top',
-        'tr' => 'top-right',
-        'l' => 'left',
-        'c' => 'center',
-        'r' => 'right',
-        'bl' => 'bottom-left',
-        'b' => 'bottom',
-        'br' => 'bottom-right',
-    ],
+	'default_locale' => app()->getLocale(),
+	'locales' => [
+		'cs' => 'cs',
+		'en' => 'en',
+	],
+	'model' => \Bistroagency\Imaginator\Models\Imaginator::class,
+	'middlewares' => [
+		'web',
+	],
+	'breakpoints' => [
+		't' =>'tiny',
+		's' => 'small',
+		'm' => 'medium',
+		'l' => 'large',
+		'xl' => 'xlarge',
+		'xxl' => 'xxlarge',
+		'fhd' => 'fullhd',
+	],
+	'densities' => [
+		'regular' => [
+			'scale' => 1,
+			'suffix' => null,
+		],
+		'retina' => [
+			'scale' => 2,
+			'suffix' => '@2',
+		],
+	],
+	'anchor_points' => [
+		'tl' => 'top-left',
+		't' => 'top',
+		'tr' => 'top-right',
+		'l' => 'left',
+		'c' => 'center',
+		'r' => 'right',
+		'bl' => 'bottom-left',
+		'b' => 'bottom',
+		'br' => 'bottom-right',
+	],
 ];
 ...
 ~~~~
 
-* In this file you can define the default locale, all the locales, the model to use for Imaginator, breakpoints, densities and anchor points for auto-resizing.
+* In this file you can define the default locale, all the locales, the model, rotue properties, breakpoints, densities and anchor points for auto-resizing.
 * The Imaginator package uses these as a reference, to check whether you have properly defined the above mentioned options in the `schemas.php` file.
 * Most of this file should be pretty self-explanatory but the `model` setting is the interesting one.
 * In the Imaginator package, we wanted to implement an `$imaginator->isUsed()` function to determine, whether the Imaginators are being used somewhere.
@@ -177,6 +180,12 @@ return [
 * But for the package to use your model, you have to edit the `model` setting in the `app.php` file and setting it as the proper class path to your own Imaginator model in your project.
 * The keys in the `locales, densities` and `anchor points` settings are used in the `schemas.php` file to generate the templates and variations.
 * To access all the setting variables outside of Imaginator, all you have to do is to call the `config()` helper with the `imaginator.` prefix.
+
+## Viewing files
+
+**After all you'd like to see what images you currently have on your page, right?**
+
+As of now there are two ways to display all the 'Images' or as the package calls them 'Imaginators' you either have to go to the route `route('imaginator.index')` or by clicking on an input and choosing the `Přehlad` tab.
     
 ## Contributing
 
