@@ -32,6 +32,7 @@
 			uploadUrl: '{{ route('imaginator.upload') }}',
 			storeUrl: '{{ route('imaginator.store') }}',
 			appUrl: '{{ url('/') }}',
+			csrf_token: '{{ csrf_token() }}',
 		};
 	</script>
 </head>

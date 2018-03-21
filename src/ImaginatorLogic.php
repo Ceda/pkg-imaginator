@@ -19,8 +19,8 @@ class ImaginatorLogic extends Controller
 
 	public function __construct()
 	{
-		$this->tempDestination = public_path('storage/imaginator/tmp/');
-		$this->destination = public_path('storage/imaginator/');
+		$this->tempDestination = config('imaginator.app.storage.tempDestination');
+		$this->destination = config('imaginator.app.storage.destination');
 	}
 
 	/**
@@ -66,7 +66,7 @@ class ImaginatorLogic extends Controller
 				abort(404, 'Imaginator se nenašel.');
 			}
 			if ($imaginator->imaginator_template->name !== $template) {
-				return redirect()->route('imaginator.create', [
+				return redirect()->route(config('imaginator.app.routes.as').'create', [
 					'template' => $imaginator->imaginator_template->name,
 					'imaginator' => $imaginator->id,
 				]);
@@ -82,7 +82,7 @@ class ImaginatorLogic extends Controller
 			'imaginator' => $imaginator !== null ? $imaginator : $this->getImaginatorModel(),
 			'imaginatorTemplate' => $imaginatorTemplate,
 			'imaginatorSources' => $imaginatorSources,
-			'imaginatorsViewUrl' => route('imaginator.view', $imaginatorTemplate->name),
+			'imaginatorsViewUrl' => route(config('imaginator.app.routes.as').'view', $imaginatorTemplate->name),
 		]);
 	}
 
@@ -161,7 +161,7 @@ class ImaginatorLogic extends Controller
 		return view('imaginator::view', [
 			'imaginators' => $imaginators,
 			'imaginatorTemplate' => $imaginatorTemplate,
-			'imaginatorCreateUrl' => route('imaginator.create', $imaginatorTemplate->name),
+			'imaginatorCreateUrl' => route(config('imaginator.app.routes.as').'create', $imaginatorTemplate->name),
 		]);
 	}
 

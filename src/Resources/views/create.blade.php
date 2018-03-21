@@ -113,8 +113,8 @@
 
 					<button class="fluid large teal ui button"
 							@click="triggerOpenDropzone"
-							v-if="hasAllSourcesOrImaginatorHasId"
-							:class="{'disabled': !isSomethingSelected || isSomethingResizing}"
+							v-if="hasAllSourcesOrImaginatorHasId && !isSomethingResizing"
+							:class="{'disabled': !isSomethingSelected}"
 							style="text-align:left; margin-bottom:15px;">
 						<i class="folder open icon"></i>
 						Vybrat soubor pro @{{ numberOfSelected }} variace

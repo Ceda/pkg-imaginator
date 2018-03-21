@@ -14,6 +14,10 @@ return [
 			'web',
 		],
 	],
+	'storage' => [
+		'tempDestination' => public_path('storage/imaginator/tmp/'),
+		'destination' => public_path('storage/imaginator/'),
+	],
 	'breakpoints' => [
 		't' =>'tiny',
 		's' => 'small',
