@@ -134,8 +134,12 @@ return [
 		'en' => 'en',
 	],
 	'model' => \Bistroagency\Imaginator\Models\Imaginator::class,
-	'middlewares' => [
-		'web',
+	'routes' => [
+		'prefix' => 'imaginator',
+		'as' => 'imaginator.',
+		'middlewares' => [
+			'web',
+		],
 	],
 	'breakpoints' => [
 		't' =>'tiny',
