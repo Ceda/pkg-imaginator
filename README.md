@@ -114,6 +114,23 @@ This is where the fun truly begins.
  * Now after clicking on the input you should see the Imaginator popping up. Now you are ready to use the Imaginator however you like!
  * CREATE SOMETHING AWESOME!
  
+ ## Getting Images
+ 
+ **Predefined way of getting imaginator Images**
+ 
+ * To get a picture anywhere on your site first things first you have to add the `libs-head.js` file to your site's head.
+ * The first step is to ensure proper functioning on IE 11.
+ * After that by calling the `generateImaginatorPicture()` function you can generate html picture markup.
+ * This function takes 3 parameters, `(required) int $id`, `(optional) string $locale`, `(optional) array $attributes`.
+ * So far the only accepted attributes are `class` and `id`. Anything else will result in an `Unallowed Attribute Exception`.
+ * You can modify the allowed picture attributes in the `app.php` config file after you published it.
+ * To get the LazyLoad json, you can call the `getImaginator()` helper function.
+ * The `getImaginator()` function has one required parameter and that's the ID of the desired Imaginator.
+ * As a result it will return an Imaginator install which then can return the `Lazyload Object`.
+ * To get the `Lazyload Object` you have to execute the `->getLazyloadOjbect()` function which takes `string $locale` as an optional parameter.
+ * Even if the `$locale` is a required parameter I would recomment supplying it to the function whenever you can.
+ * Example: `getImaginator(16)->getLazyloadObject()`.
+ 
  ## Configuration
  
  **How to properly configure things**
@@ -123,7 +140,6 @@ This is where the fun truly begins.
  * It should look like this:
  
 ~~~~
-...
 <?php
 
 return [
@@ -175,7 +191,6 @@ return [
 		'br' => 'bottom-right',
 	],
 ];
-...
 ~~~~
 
 * Here you can basically edit everything about how the Imaginator works.
@@ -193,6 +208,17 @@ return [
 **After all you'd like to see what images you currently have on your page, right?**
 
 As of now there are two ways to display all the 'Images' or as the package calls them 'Imaginators' you either have to go to the route `route('imaginator.index')` or by clicking on an input and choosing the `Přehlad` tab.
+
+## Browser support
+
+**All the amazing platforms you can run our Imaginator on**
+
+Mostly all of the modern browser are supported :).
+
+**--=ToDo=--**
+
+* Add IE 11 support
+
     
 ## Contributing
 

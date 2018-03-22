@@ -4,6 +4,7 @@ namespace Bistroagency\Imaginator;
 
 use Bistroagency\Imaginator\Commands\CleanFiles;
 use Bistroagency\Imaginator\Commands\Refresh;
+use Bistroagency\Imaginator\Models\Imaginator;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,7 +20,8 @@ class ImaginatorServiceProvider extends ServiceProvider
 		/*
 		* Register helpers if needed.
 		*/
-		require_once __DIR__.'/Helpers/common.php';
+		require_once __DIR__ . '/Helpers/common.php';
+		require_once __DIR__ . '/Helpers/imaginator.php';
 		if (!function_exists('push_flash')) {
 			require_once __DIR__ . '/Helpers/alerts.php';
 		}
@@ -64,7 +66,7 @@ class ImaginatorServiceProvider extends ServiceProvider
 		* Bind Imaginator class
 		*/
 		$this->app->bind('bistroagency-imaginator', function () {
-			return new ImaginatorLogic();
+			return new Imaginator();
 		});
 
 		/*
@@ -73,10 +75,6 @@ class ImaginatorServiceProvider extends ServiceProvider
 		$this->mergeConfigFrom(
 			__DIR__ . '/Configs/app.php', 'imaginator.app'
 		);
-		$this->mergeConfigFrom(
-			__DIR__ . '/Configs/schemas.php', 'imaginator.schemas'
-		);
-
 		/*
 		* Publish configs.
 		*/
@@ -108,5 +106,10 @@ class ImaginatorServiceProvider extends ServiceProvider
 		 */
 		$loader = \Illuminate\Foundation\AliasLoader::getInstance();
 		$loader->alias('Image', 'Intervention\Image\Facades\Image');
+
+		/*
+		 * Register Imaginator repository for getters
+		 */
+		$this->app->singleton('ImaginatorRepository', \Bistroagency\Imaginator\Repositories\ImaginatorRepository::class);
 	}
 }

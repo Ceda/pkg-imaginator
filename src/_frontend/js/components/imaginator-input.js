@@ -6,7 +6,7 @@ const ImaginatorInput = {
 			return false;
 		}
 
-		imaginatorInputs.forEach((element) => {
+		Array.prototype.forEach.call (imaginatorInputs, (element) => {
 			this.bindClickEvents.setImaginatorInput(element);
 		});
 	},
