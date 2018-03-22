@@ -15,8 +15,5 @@ abstract class Repository
 		return $this->collection;
 	}
 
-	protected function collect()
-	{
-		return collect();
-	}
+	abstract protected function collect();
 }
