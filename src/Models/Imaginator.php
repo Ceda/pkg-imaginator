@@ -53,7 +53,7 @@ class Imaginator extends Model
 
 		for ($i = 0; $i < $variations->count(); $i++) {
 			if ($variations[$i]->locale === 'all' || $variations[$i]->locale === $locale) {
-				$breakpoint = config('imaginator.app.breakpoints')[$variations[$i]->breakpoint];
+				$breakpoint = config('imaginator.breakpoints.default')[$variations[$i]->breakpoint];
 				$density = $variations[$i]->density;
 				$lazyArray[$breakpoint][$density] = isset($this->imaginator_sources[$i]) ? $this->imaginator_sources[$i]->resized : '';
 			}
@@ -140,7 +140,7 @@ class Imaginator extends Model
 
 	public static function getImaginatorSrcsetSizes()
 	{
-		$breakpointSizes = config('imaginator.app.breakpoint_sizes');
+		$breakpointSizes = config('imaginator.breakpoints.default_sizes');
 		$sizes = [];
 		foreach ($breakpointSizes as $breakpointName => $breakpointSize) {
 			$sizes[$breakpointName] = '(min-width: ' . $breakpointSize . ')';

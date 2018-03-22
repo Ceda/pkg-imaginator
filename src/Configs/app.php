@@ -18,24 +18,6 @@ return [
 		'tempDestination' => public_path('storage/imaginator/tmp/'),
 		'destination' => public_path('storage/imaginator/'),
 	],
-	'breakpoints' => [
-		't' =>'tiny',
-		's' => 'small',
-		'm' => 'medium',
-		'l' => 'large',
-		'xl' => 'xlarge',
-		'xxl' => 'xxlarge',
-		'fhd' => 'fullhd',
-	],
-	'breakpoint_sizes' => [
-		'tiny' => '0px',
-		'small' => '540px',
-		'medium' => '768px',
-		'large' => '1004px',
-		'xlarge' => '1260px',
-		'xxlarge' => '1600px',
-		'fullhd' => '1920px',
-	],
 	'densities' => [
 		'regular' => [
 			'scale' => 1,

@@ -75,6 +75,9 @@ class ImaginatorServiceProvider extends ServiceProvider
 		$this->mergeConfigFrom(
 			__DIR__ . '/Configs/app.php', 'imaginator.app'
 		);
+		$this->mergeConfigFrom(
+			__DIR__ . '/Configs/breakpoints.php', 'imaginator.breakpoints'
+		);
 		/*
 		* Publish configs.
 		*/
