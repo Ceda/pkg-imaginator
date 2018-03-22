@@ -1,2 +1,3 @@
 src/_frontend/node_modules
+src/_frontend/_env.json
 vendor

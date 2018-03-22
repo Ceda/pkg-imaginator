@@ -1,5 +1,5 @@
 {
-	"PROXY": "localhost/bistro/SampleApp",
+	"PROXY": "localhost/bistro/app",
 	"PROXY_OPEN": "false",
 	"DISABLE_MINIFY_NOTIFIER": false,
 	"browsersync": {
