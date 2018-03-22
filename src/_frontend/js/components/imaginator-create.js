@@ -87,13 +87,13 @@ const ImaginatorCreate = {
 					}
 				},
 
-				selectAllVariants() {
+				selectAllVariations() {
 					this.variations.forEach((variation) => {
 						this.$set(variation, 'isSelected', true);
 					});
 				},
 
-				selectNoneVariants() {
+				deselectAllVariations() {
 					this.variations.forEach((variation) => {
 						if (variation.isResizing && this.hasAllSources) {
 							return false;
@@ -118,14 +118,14 @@ const ImaginatorCreate = {
 				onLoadHandler() {
 					if (!this.firstLoaded) { // pri nacteni stranky
 						if (this.hasAllSources) {
-							this.selectAllVariants();
+							this.selectAllVariations();
 						}
 						else if (this.hasSomeWithoutSources) {
 							this.selectVariationsWithoutSource();
 						}
 						else if (this.hasAllWithoutSources) {
 							if (this.isEditing) {
-								this.selectAllVariants();
+								this.selectAllVariations();
 								this.variations.forEach((variation) => {
 									this.$set(variation, 'hasNoSource', true);
 								});
@@ -136,7 +136,7 @@ const ImaginatorCreate = {
 					else { // po nahrati obrazku
 						if (!this.hasSomeWithoutSources) { // mame vsechny source?
 							if (!this.isSomethingResized) { // neni nic resizovano?
-								this.selectAllVariants();
+								this.selectAllVariations();
 							}
 
 							this.variations.forEach((variation) => {
