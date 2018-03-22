@@ -52,12 +52,11 @@ class ImaginatorLogic extends Controller
 	public function create(string $template, Request $request)
 	{
 		if (strlen($template)) {
-			$imaginatorTemplate = ImaginatorTemplate::where('name', $template)->firstOrFail();
-		} else {
-			return response()->json([
-				'status_code' => 400,
-				'status_message' => 'Template not found',
-			], 400);
+			$imaginatorTemplate = ImaginatorTemplate::where('name', $template)->first();
+		}
+
+		if(!$imaginatorTemplate) {
+			return redirect()->route(config('imaginator.app.routes.as').'templates');
 		}
 
 		if ($request->filled('imaginator')) {
@@ -144,12 +143,11 @@ class ImaginatorLogic extends Controller
 	public function view(string $template)
 	{
 		if (strlen($template)) {
-			$imaginatorTemplate = ImaginatorTemplate::where('name', $template)->firstOrFail();
-		} else {
-			return response()->json([
-				'status_code' => 400,
-				'status_message' => 'Template not found',
-			], 400);
+			$imaginatorTemplate = ImaginatorTemplate::where('name', $template)->first();
+		}
+
+		if(!$imaginatorTemplate) {
+			return redirect()->route(config('imaginator.app.routes.as').'templates');
 		}
 
 		$imaginators = $this->getImaginatorModel()::getValidatedPaginated($imaginatorTemplate);
@@ -162,6 +160,14 @@ class ImaginatorLogic extends Controller
 			'imaginators' => $imaginators,
 			'imaginatorTemplate' => $imaginatorTemplate,
 			'imaginatorCreateUrl' => route(config('imaginator.app.routes.as').'create', $imaginatorTemplate->name),
+		]);
+	}
+
+	public function templates()
+	{
+		$imaginatorTemplates = ImaginatorTemplate::orderBy('label')->get();
+		return view('imaginator::templates', [
+			'imaginatorTemplates' => $imaginatorTemplates,
 		]);
 	}
 
