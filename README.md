@@ -115,12 +115,10 @@ This is where the fun truly begins.
  
  * Load `libs-head.js` file in html head.
  * The first step is to ensure proper functioning on IE 11.
- * After that by calling the `generateImaginatorPicture()` function you can generate html picture markup.
- * This function takes 3 parameters, `(required) int $id`, `(optional) string $locale`, `(optional) array $attributes`.
- * So far the only accepted attributes are `class` and `id`. Anything else will result in an `Unallowed Attribute Exception`.
+ * Generate picture html markup by calling `generateImaginatorPicture((required) int $id`, `(optional) string $locale`, `(optional) array $attributes)`.
  * You can modify the allowed picture attributes in the `app.php` config file after you published it.
  * To get the LazyLoad json, you can call the `getImaginator()` helper function.
- * The `getImaginator()` function has one required parameter and that's the ID of the desired Imaginator.
+ * Get lazy load json by calling `getImaginator((required) int $id)`.
  * To get the `Lazyload Object` you have to execute the `->getLazyloadOjbect()` function which takes `string $locale` as an optional parameter. If you can, always send the locale parameter to the function.
  * Example: `getImaginator(16)->getLazyloadObject()`.
  
