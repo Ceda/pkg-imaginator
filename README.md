@@ -31,7 +31,6 @@ Run composer update
 
 This is where the fun truly begins.
 
-* Before using the Imaginator there are a few steps we need to do for it to run smoothly.
 * First things first we need to run `php artisan migrate` in order to build our database structure.
 * If you wish to modify the database structure in any way or form simply create update migrations.
 * After building the proper database structure we need to define the schemas for `Imaginator Templates` and `Imaginator Variations`.
@@ -77,14 +76,10 @@ This is where the fun truly begins.
  * After you successfully set up all the templates and variations you need, go to the backend of your project and use the `php artisan imaginator:refresh` command to generate the defined templates and variations.
  * The above mentioned example will generate two variations and one template if we go by the default config. `Picture` and `Picture - retina`. If we were to set the hasTranslations to true, this would change, generating four variations with the `( locale )` suffixes.
  * If you make any modifications in the `schemas.php` file in the future, you'll need to run the `php artisan imaginator:refresh` command to regenerate the templates and variations.
- * Running this command will not overwrite existing variations, it will only edit them, delete or add new ones. It's completely safe to run it over and over without any modifications. We do so in the deploy process to ensure all the Schemas are properly built on all our environments. 
- * Now you have properly setup your database and you're ready to go the next step.
- * All that's left is to include the assets in your project.
+ * Running this command will not overwrite existing variations, it will only edit them, delete or add new ones. It's completely safe to run it over and over without any modifications. We do so in the deploy process to ensure all the Schemas are properly built on all our environments.
  * To do just that, we'll need to run the `php artisan vendor:publish --tag=imaginator-assets` command.
  * This will generate an `assets` folder in the root of your project (if you don't have one already) and place the Imaginator assets in the `imaginator` folder in it.
- * For the Imaginator to work, you'll need to include the accompanying css styles into your template.
  * The key files are `libs-imaginator.css` (located in project_root/assets/imaginator/dist/css) and `libs-imaginator.js` (located in project_root/assets/imaginator/dist/js).
- * Only a few more steps left to go!
  * If you so desire, you can use the included example Imaginator that is bound to an input, all you have to do is include the `imaginator-input.js` file (located in project_root/assets/imagiantor/dist/js).
  * However for the `imaginator-input.js` to work properly, you need to define the `ImaginatorCreateUrl` global variable in js.
  * You can do so by including this code snippet into your project:
@@ -118,7 +113,7 @@ This is where the fun truly begins.
  
  **Predefined way of getting imaginator Images**
  
- * To get a picture anywhere on your site first things first you have to add the `libs-head.js` file to your site's head.
+ * Load `libs-head.js` file in html head.
  * The first step is to ensure proper functioning on IE 11.
  * After that by calling the `generateImaginatorPicture()` function you can generate html picture markup.
  * This function takes 3 parameters, `(required) int $id`, `(optional) string $locale`, `(optional) array $attributes`.
@@ -126,9 +121,7 @@ This is where the fun truly begins.
  * You can modify the allowed picture attributes in the `app.php` config file after you published it.
  * To get the LazyLoad json, you can call the `getImaginator()` helper function.
  * The `getImaginator()` function has one required parameter and that's the ID of the desired Imaginator.
- * As a result it will return an Imaginator install which then can return the `Lazyload Object`.
- * To get the `Lazyload Object` you have to execute the `->getLazyloadOjbect()` function which takes `string $locale` as an optional parameter.
- * Even if the `$locale` is a required parameter I would recomment supplying it to the function whenever you can.
+ * To get the `Lazyload Object` you have to execute the `->getLazyloadOjbect()` function which takes `string $locale` as an optional parameter. If you can, always send the locale parameter to the function.
  * Example: `getImaginator(16)->getLazyloadObject()`.
  
  ## Configuration

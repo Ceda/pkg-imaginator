@@ -46,4 +46,6 @@ const ImaginatorInput = {
 	}
 };
 
-ImaginatorInput.init();
+window.onload = () => {
+	ImaginatorInput.init();
+};

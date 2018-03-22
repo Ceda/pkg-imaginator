@@ -199,7 +199,7 @@ class Imaginator extends Model
 	{
 		foreach($attributes as $attributeKey => $attribute) {
 			if(!in_array($attributeKey, config('imaginator.app.allowedPictureAttributes'))) {
-				throw new \Exception('Unallowed attribute', 400);
+				throw new \Exception('Unallowed attribute', 500);
 			}
 		}
 
