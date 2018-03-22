@@ -19,8 +19,8 @@ class ImaginatorLogic extends Controller
 
 	public function __construct()
 	{
-		$this->tempDestination = config('imaginator.app.storage.tempDestination');
-		$this->destination = config('imaginator.app.storage.destination');
+		$this->tempDestination = public_path(config('imaginator.app.storage.tempDestination'));
+		$this->destination = public_path(config('imaginator.app.storage.destination'));
 	}
 
 	/**
@@ -100,7 +100,7 @@ class ImaginatorLogic extends Controller
 				$imaginatorSourceData['id'] = isset($imaginatorSourceData['id']) ? $imaginatorSourceData['id'] : null;
 				$parentFolder = md5($imaginator->id);
 
-				$folders = base_path('../storage/imaginator/' . $parentFolder);
+				$folders = public_path(config('imaginator.app.storage.destination') . $parentFolder);
 
 				if (!File::exists($folders)) {
 					File::makeDirectory($folders, 0777, true);
@@ -113,7 +113,7 @@ class ImaginatorLogic extends Controller
 					File::move($filePath, $this->destination . $parentFolder . '/' . $fileName);
 				}
 
-				$sourcePath = 'storage/imaginator/' . $parentFolder . '/' . $fileName;
+				$sourcePath = config('imaginator.app.storage.destination') . $parentFolder . '/' . $fileName;
 
 				$fillData = collect($imaginatorSourceData)->merge([
 					'imaginator_id' => $imaginator->id,
@@ -204,7 +204,7 @@ class ImaginatorLogic extends Controller
 			foreach ($variations as $variation) {
 				$imaginatorSources[] = [
 					'imaginator_variation_id' => $variation->id,
-					'source' => 'storage/imaginator/tmp/' . $path,
+					'source' => config('imaginator.app.storage.tempDestination') . $path,
 				];
 			}
 
@@ -333,13 +333,13 @@ class ImaginatorLogic extends Controller
 				$image = Image::make($sourceImage);
 				$image->fit($image->width(), $image->height(), null);
 
-				$folder = public_path('storage/imaginator/' . $parentFolder . '/' . $variationName);
+				$folder = public_path(config('imaginator.app.storage.destination') . $parentFolder . '/' . $variationName);
 
 				if (!File::exists($folder)) {
 					File::makeDirectory($folder, 0777, true);
 				}
 
-				$imaginatorFilePath = 'storage/imaginator/' . $parentFolder . '/' . $variationName . '/' . $baseName . $suffix . '.' . $extension;
+				$imaginatorFilePath = config('imaginator.app.storage.destination') . $parentFolder . '/' . $variationName . '/' . $baseName . $suffix . '.' . $extension;
 
 				$image->save(public_path($imaginatorFilePath), $quality);
 
