@@ -15,8 +15,8 @@ return [
 		],
 	],
 	'storage' => [
-		'tempDestination' => 'storage/imaginator/tmp/',
-		'destination' => 'storage/imaginator/',
+		'tempDestination' => 'storage/imaginator/tmp',
+		'destination' => 'storage/imaginator',
 	],
 	'densities' => [
 		'regular' => [

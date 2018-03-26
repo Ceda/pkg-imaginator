@@ -13,3 +13,10 @@ if (!function_exists('generate_imaginator_picture')) {
 		return \Bistroagency\Imaginator\Facades\Imaginator::generateImaginatorPicture($id, $locale, $attributes);
 	}
 }
+
+if (!function_exists('make_imaginator_path')) {
+	function make_imaginator_path(array $parameters, $glue = '/')
+	{
+		return implode($glue, $parameters);
+	}
+}

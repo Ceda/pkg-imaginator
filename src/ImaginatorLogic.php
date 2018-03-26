@@ -55,8 +55,8 @@ class ImaginatorLogic extends Controller
 			$imaginatorTemplate = ImaginatorTemplate::where('name', $template)->first();
 		}
 
-		if(!$imaginatorTemplate) {
-			return redirect()->route(config('imaginator.app.routes.as').'templates');
+		if (!$imaginatorTemplate) {
+			return redirect()->route(config('imaginator.app.routes.as') . 'templates');
 		}
 
 		if ($request->filled('imaginator')) {
@@ -65,7 +65,7 @@ class ImaginatorLogic extends Controller
 				abort(404, 'Imaginator se nenašel.');
 			}
 			if ($imaginator->imaginator_template->name !== $template) {
-				return redirect()->route(config('imaginator.app.routes.as').'create', [
+				return redirect()->route(config('imaginator.app.routes.as') . 'create', [
 					'template' => $imaginator->imaginator_template->name,
 					'imaginator' => $imaginator->id,
 				]);
@@ -81,7 +81,7 @@ class ImaginatorLogic extends Controller
 			'imaginator' => $imaginator !== null ? $imaginator : $this->getImaginatorModel(),
 			'imaginatorTemplate' => $imaginatorTemplate,
 			'imaginatorSources' => $imaginatorSources,
-			'imaginatorsViewUrl' => route(config('imaginator.app.routes.as').'view', $imaginatorTemplate->name),
+			'imaginatorsViewUrl' => route(config('imaginator.app.routes.as') . 'view', $imaginatorTemplate->name),
 		]);
 	}
 
@@ -110,10 +110,18 @@ class ImaginatorLogic extends Controller
 				$fileName = pathinfo($filePath, PATHINFO_BASENAME);
 
 				if (File::exists($filePath)) {
-					File::move($filePath, $this->destination . $parentFolder . '/' . $fileName);
+					File::move($filePath, make_imaginator_path([
+						$this->destination,
+						$parentFolder,
+						$fileName,
+					]));
 				}
 
-				$sourcePath = config('imaginator.app.storage.destination') . $parentFolder . '/' . $fileName;
+				$sourcePath = make_imaginator_path([
+					config('imaginator.app.storage.destination'),
+					$parentFolder,
+					$fileName,
+				]);
 
 				$fillData = collect($imaginatorSourceData)->merge([
 					'imaginator_id' => $imaginator->id,
@@ -145,7 +153,7 @@ class ImaginatorLogic extends Controller
 		if (strlen($template)) {
 			$imaginatorTemplate = ImaginatorTemplate::where('name', $template)->first();
 		} else {
-			return redirect()->route(config('imaginator.app.routes.as').'templates');
+			return redirect()->route(config('imaginator.app.routes.as') . 'templates');
 		}
 
 		$imaginators = $this->getImaginatorModel()::getValidatedPaginated($imaginatorTemplate);
@@ -157,7 +165,7 @@ class ImaginatorLogic extends Controller
 		return view('imaginator::view', [
 			'imaginators' => $imaginators,
 			'imaginatorTemplate' => $imaginatorTemplate,
-			'imaginatorCreateUrl' => route(config('imaginator.app.routes.as').'create', $imaginatorTemplate->name),
+			'imaginatorCreateUrl' => route(config('imaginator.app.routes.as') . 'create', $imaginatorTemplate->name),
 		]);
 	}
 
@@ -190,7 +198,10 @@ class ImaginatorLogic extends Controller
 				], 400);
 			}
 
-			if (file_exists($this->tempDestination . $path)) {
+			if (file_exists(make_imaginator_path([
+				$this->destination,
+				$path,
+			]))) {
 				return response()->json([
 					'status_code' => 500,
 					'status_message' => 'This file already exists (even though it shouldn\'t)',
@@ -331,13 +342,24 @@ class ImaginatorLogic extends Controller
 				$image = Image::make($sourceImage);
 				$image->fit($image->width(), $image->height(), null);
 
-				$folder = public_path(config('imaginator.app.storage.destination') . $parentFolder . '/' . $variationName);
+				$folder = public_path(make_imaginator_path([
+					config('imaginator.app.storage.destination'),
+					$parentFolder,
+					$variationName,
+				]));
 
 				if (!File::exists($folder)) {
 					File::makeDirectory($folder, 0777, true);
 				}
 
-				$imaginatorFilePath = config('imaginator.app.storage.destination') . $parentFolder . '/' . $variationName . '/' . $baseName . $suffix . '.' . $extension;
+				$newFileName = $baseName . $suffix . '.' . $extension;
+
+				$imaginatorFilePath = make_imaginator_path([
+					config('imaginator.app.storage.destination'),
+					$parentFolder,
+					$variationName,
+					$newFileName,
+				]);
 
 				$image->save(public_path($imaginatorFilePath), $quality);
 
