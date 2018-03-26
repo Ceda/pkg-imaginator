@@ -109,7 +109,7 @@ const ImaginatorCreate = {
 					let imaginatorSourceIds = _.map(this.imaginatorSources, 'imaginator_variation_id');
 					let idsArrayDifference = _.difference(variationIds, imaginatorSourceIds);
 
-					$.each(idsArrayDifference, (index, id) => {
+					_.forEach(idsArrayDifference, (id) => {
 						this.selectVariation(_.find(this.variations, {id: parseInt(id)}));
 						this.$set(_.find(this.variations, {id: parseInt(id)}), 'hasNoSource', true);
 					});
