@@ -1,5 +1,4 @@
-class ImaginatorInput
-{
+class ImaginatorInput {
 	constructor() {
 		this.init();
 
@@ -9,11 +8,11 @@ class ImaginatorInput
 	init() {
 		let imaginatorInputs = document.querySelectorAll('[data-imaginator]');
 
-		if(imaginatorInputs.length < 1) {
+		if (imaginatorInputs.length < 1) {
 			return false;
 		}
 
-		for(let i = 0; i < imaginatorInputs.length; i++) {
+		for (let i = 0; i < imaginatorInputs.length; i++) {
 			this.setImaginatorInput(imaginatorInputs[i]);
 		}
 	}
@@ -25,7 +24,7 @@ class ImaginatorInput
 			imaginatorTemplate = this.clickedInput.getAttribute('data-imaginator-template'),
 			url = window.ImaginatorCreateUrl.replace('{template}', imaginatorTemplate);
 
-		if(elementValue.length > 0) {
+		if (elementValue.length > 0) {
 			url += '?imaginator=' + elementValue;
 		}
 
@@ -38,7 +37,7 @@ class ImaginatorInput
 			padding: '0px',
 			animation: false,
 			onClose: () => {
-				if(typeof window.lightboxResult === 'undefined') {
+				if (typeof window.lightboxResult === 'undefined') {
 					return;
 				}
 

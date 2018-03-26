@@ -29,6 +29,7 @@ class Imaginator extends Model
 		}
 
 		$this->imaginators = app('ImaginatorRepository')->get();
+
 		return $this->imaginators;
 	}
 
@@ -159,14 +160,21 @@ class Imaginator extends Model
 		self::checkAllowedPictureAttributes($attributes);
 		$appendableAttributes = [];
 
-		if(!$locale) $locale = locale();
-		foreach($attributes as $attributeKey => $attribute) {
-			if(!isset($attributes[$attributeKey]) || !is_string($attribute)) $attributes[$attributeKey] = null;
-			$appendableAttributes[] = $attributeKey.'="'.$attribute.'"';
+		if (!$locale) {
+			$locale = locale();
+		}
+
+		foreach ($attributes as $attributeKey => $attribute) {
+			if (!isset($attributes[$attributeKey]) || !is_string($attribute)) {
+				$attributes[$attributeKey] = null;
+			}
+			$appendableAttributes[] = $attributeKey . '="' . $attribute . '"';
 		}
 
 		//prepare picture opening tag
-		if(!isset($html)) $html = '<picture '.implode(' ', $appendableAttributes).'>';
+		if (!isset($html)) {
+			$html = '<picture ' . implode(' ', $appendableAttributes) . '>';
+		}
 
 		//get srcset sizes and imaginator
 		$srcsetSizes = self::getImaginatorSrcsetSizes();
@@ -178,17 +186,17 @@ class Imaginator extends Model
 		//prepare picture sources and html markup
 		foreach ($lazyloadArray as $breakpoint => $lazyloadImage) {
 			$sources = [];
-			foreach($lazyloadImage as $imageKey => $image) {
-				if($imageKey === 'retina'){
-					$sources[] = url($image).' 2x';
+			foreach ($lazyloadImage as $imageKey => $image) {
+				if ($imageKey === 'retina') {
+					$sources[] = url($image) . ' 2x';
 					continue;
 				}
-				$sources[] = url($image).' 1x';
+				$sources[] = url($image) . ' 1x';
 			}
-			$html .= '<source srcset="'.implode(',', $sources).'" media="'.$srcsetSizes[$breakpoint].'">';
+			$html .= '<source srcset="' . implode(',', $sources) . '" media="' . $srcsetSizes[$breakpoint] . '">';
 		}
 		//use srcset instead of src on img tag because of polyfill compatibility
-		$html .= '<img srcset="'.url($imaginator->imaginator_sources[0]->source).'" alt="'.$imaginator->id.'">';
+		$html .= '<img srcset="' . url($imaginator->imaginator_sources[0]->source) . '" alt="' . $imaginator->id . '">';
 		$html .= '</picture>';
 
 		//return one picture
@@ -197,8 +205,8 @@ class Imaginator extends Model
 
 	protected static function checkAllowedPictureAttributes(array $attributes = [])
 	{
-		foreach($attributes as $attributeKey => $attribute) {
-			if(!in_array($attributeKey, config('imaginator.app.allowedPictureAttributes'))) {
+		foreach ($attributes as $attributeKey => $attribute) {
+			if (!in_array($attributeKey, config('imaginator.app.allowedPictureAttributes'))) {
 				throw new \Exception('Unallowed attribute', 500);
 			}
 		}

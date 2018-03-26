@@ -144,9 +144,7 @@ class ImaginatorLogic extends Controller
 	{
 		if (strlen($template)) {
 			$imaginatorTemplate = ImaginatorTemplate::where('name', $template)->first();
-		}
-
-		if(!$imaginatorTemplate) {
+		} else {
 			return redirect()->route(config('imaginator.app.routes.as').'templates');
 		}
 
