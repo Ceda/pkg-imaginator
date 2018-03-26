@@ -213,7 +213,10 @@ class ImaginatorLogic extends Controller
 			foreach ($variations as $variation) {
 				$imaginatorSources[] = [
 					'imaginator_variation_id' => $variation->id,
-					'source' => config('imaginator.app.storage.tempDestination') . $path,
+					'source' => make_imaginator_path([
+						config('imaginator.app.storage.tempDestination'),
+						$path
+					]),
 				];
 			}
 
