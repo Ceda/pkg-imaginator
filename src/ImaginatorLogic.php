@@ -19,8 +19,8 @@ class ImaginatorLogic extends Controller
 
 	public function __construct()
 	{
-		$this->tempDestination = config('imaginator.app.storage.tempDestination');
-		$this->destination = config('imaginator.app.storage.destination');
+		$this->tempDestination = public_path(config('imaginator.app.storage.tempDestination'));
+		$this->destination = public_path(config('imaginator.app.storage.destination'));
 	}
 
 	/**
@@ -52,12 +52,11 @@ class ImaginatorLogic extends Controller
 	public function create(string $template, Request $request)
 	{
 		if (strlen($template)) {
-			$imaginatorTemplate = ImaginatorTemplate::where('name', $template)->firstOrFail();
-		} else {
-			return response()->json([
-				'status_code' => 400,
-				'status_message' => 'Template not found',
-			], 400);
+			$imaginatorTemplate = ImaginatorTemplate::where('name', $template)->first();
+		}
+
+		if (!$imaginatorTemplate) {
+			return redirect()->route(config('imaginator.app.routes.as') . 'templates');
 		}
 
 		if ($request->filled('imaginator')) {
@@ -66,7 +65,7 @@ class ImaginatorLogic extends Controller
 				abort(404, 'Imaginator se nenašel.');
 			}
 			if ($imaginator->imaginator_template->name !== $template) {
-				return redirect()->route(config('imaginator.app.routes.as').'create', [
+				return redirect()->route(config('imaginator.app.routes.as') . 'create', [
 					'template' => $imaginator->imaginator_template->name,
 					'imaginator' => $imaginator->id,
 				]);
@@ -82,7 +81,7 @@ class ImaginatorLogic extends Controller
 			'imaginator' => $imaginator !== null ? $imaginator : $this->getImaginatorModel(),
 			'imaginatorTemplate' => $imaginatorTemplate,
 			'imaginatorSources' => $imaginatorSources,
-			'imaginatorsViewUrl' => route(config('imaginator.app.routes.as').'view', $imaginatorTemplate->name),
+			'imaginatorsViewUrl' => route(config('imaginator.app.routes.as') . 'view', $imaginatorTemplate->name),
 		]);
 	}
 
@@ -101,7 +100,7 @@ class ImaginatorLogic extends Controller
 				$imaginatorSourceData['id'] = isset($imaginatorSourceData['id']) ? $imaginatorSourceData['id'] : null;
 				$parentFolder = md5($imaginator->id);
 
-				$folders = base_path('../storage/imaginator/' . $parentFolder);
+				$folders = public_path(config('imaginator.app.storage.destination') . $parentFolder);
 
 				if (!File::exists($folders)) {
 					File::makeDirectory($folders, 0777, true);
@@ -111,10 +110,18 @@ class ImaginatorLogic extends Controller
 				$fileName = pathinfo($filePath, PATHINFO_BASENAME);
 
 				if (File::exists($filePath)) {
-					File::move($filePath, $this->destination . $parentFolder . '/' . $fileName);
+					File::move($filePath, make_imaginator_path([
+						$this->destination,
+						$parentFolder,
+						$fileName,
+					]));
 				}
 
-				$sourcePath = 'storage/imaginator/' . $parentFolder . '/' . $fileName;
+				$sourcePath = make_imaginator_path([
+					config('imaginator.app.storage.destination'),
+					$parentFolder,
+					$fileName,
+				]);
 
 				$fillData = collect($imaginatorSourceData)->merge([
 					'imaginator_id' => $imaginator->id,
@@ -144,12 +151,9 @@ class ImaginatorLogic extends Controller
 	public function view(string $template)
 	{
 		if (strlen($template)) {
-			$imaginatorTemplate = ImaginatorTemplate::where('name', $template)->firstOrFail();
+			$imaginatorTemplate = ImaginatorTemplate::where('name', $template)->first();
 		} else {
-			return response()->json([
-				'status_code' => 400,
-				'status_message' => 'Template not found',
-			], 400);
+			return redirect()->route(config('imaginator.app.routes.as') . 'templates');
 		}
 
 		$imaginators = $this->getImaginatorModel()::getValidatedPaginated($imaginatorTemplate);
@@ -161,7 +165,15 @@ class ImaginatorLogic extends Controller
 		return view('imaginator::view', [
 			'imaginators' => $imaginators,
 			'imaginatorTemplate' => $imaginatorTemplate,
-			'imaginatorCreateUrl' => route(config('imaginator.app.routes.as').'create', $imaginatorTemplate->name),
+			'imaginatorCreateUrl' => route(config('imaginator.app.routes.as') . 'create', $imaginatorTemplate->name),
+		]);
+	}
+
+	public function templates()
+	{
+		$imaginatorTemplates = ImaginatorTemplate::orderBy('label')->get();
+		return view('imaginator::templates', [
+			'imaginatorTemplates' => $imaginatorTemplates,
 		]);
 	}
 
@@ -186,7 +198,10 @@ class ImaginatorLogic extends Controller
 				], 400);
 			}
 
-			if (file_exists($this->tempDestination . $path)) {
+			if (file_exists(make_imaginator_path([
+				$this->destination,
+				$path,
+			]))) {
 				return response()->json([
 					'status_code' => 500,
 					'status_message' => 'This file already exists (even though it shouldn\'t)',
@@ -198,7 +213,10 @@ class ImaginatorLogic extends Controller
 			foreach ($variations as $variation) {
 				$imaginatorSources[] = [
 					'imaginator_variation_id' => $variation->id,
-					'source' => 'storage/imaginator/tmp/' . $path,
+					'source' => make_imaginator_path([
+						config('imaginator.app.storage.tempDestination'),
+						$path
+					]),
 				];
 			}
 
@@ -327,13 +345,24 @@ class ImaginatorLogic extends Controller
 				$image = Image::make($sourceImage);
 				$image->fit($image->width(), $image->height(), null);
 
-				$folder = public_path('storage/imaginator/' . $parentFolder . '/' . $variationName);
+				$folder = public_path(make_imaginator_path([
+					config('imaginator.app.storage.destination'),
+					$parentFolder,
+					$variationName,
+				]));
 
 				if (!File::exists($folder)) {
 					File::makeDirectory($folder, 0777, true);
 				}
 
-				$imaginatorFilePath = 'storage/imaginator/' . $parentFolder . '/' . $variationName . '/' . $baseName . $suffix . '.' . $extension;
+				$newFileName = $baseName . $suffix . '.' . $extension;
+
+				$imaginatorFilePath = make_imaginator_path([
+					config('imaginator.app.storage.destination'),
+					$parentFolder,
+					$variationName,
+					$newFileName,
+				]);
 
 				$image->save(public_path($imaginatorFilePath), $quality);
 

@@ -21,6 +21,11 @@ module.exports = {
 	"libs-imaginator": [
 		"./node_modules/sweetalert2/dist/sweetalert2.min.js"
 	],
+	"libs-head": [
+		"./node_modules/picturefill/dist/picturefill.min.js",
+		"./node_modules/es6-promise/dist/es6-promise.min.js",
+		"./node_modules/es6-promise/dist/es6-promise.auto.min.js"
+	],
 	"common": [
 		"./js/common.js"
 	]

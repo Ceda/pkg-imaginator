@@ -20,6 +20,19 @@ class Imaginator extends Model
 		'alias',
 	];
 
+	protected $imaginators;
+
+	public function getImaginators()
+	{
+		if ($this->imaginators !== null) {
+			return $this->imaginators;
+		}
+
+		$this->imaginators = app('ImaginatorRepository')->get();
+
+		return $this->imaginators;
+	}
+
 	public function imaginator_template()
 	{
 		return $this->belongsTo(ImaginatorTemplate::class);
@@ -41,7 +54,7 @@ class Imaginator extends Model
 
 		for ($i = 0; $i < $variations->count(); $i++) {
 			if ($variations[$i]->locale === 'all' || $variations[$i]->locale === $locale) {
-				$breakpoint = config('imaginator.app.breakpoints')[$variations[$i]->breakpoint];
+				$breakpoint = config('imaginator.breakpoints.default')[$variations[$i]->breakpoint];
 				$density = $variations[$i]->density;
 				$lazyArray[$breakpoint][$density] = isset($this->imaginator_sources[$i]) ? $this->imaginator_sources[$i]->resized : '';
 			}
@@ -70,7 +83,7 @@ class Imaginator extends Model
 				'imaginator_sources',
 			]);
 
-		if($imaginatorTemplate) {
+		if ($imaginatorTemplate) {
 			$imaginatorsQuery = $imaginatorsQuery->where('imaginator_template_id', $imaginatorTemplate->id);
 		}
 
@@ -103,7 +116,7 @@ class Imaginator extends Model
 			])
 			->where('id', $imaginator_id);
 
-		if(!$imaginatorQuery->first()) {
+		if (!$imaginatorQuery->first()) {
 			return false;
 		}
 
@@ -124,5 +137,80 @@ class Imaginator extends Model
 		}
 
 		return $imaginatorQuery->first();
+	}
+
+	public static function getImaginatorSrcsetSizes()
+	{
+		$breakpointSizes = config('imaginator.breakpoints.default_sizes');
+		$sizes = [];
+		foreach ($breakpointSizes as $breakpointName => $breakpointSize) {
+			$sizes[$breakpointName] = '(min-width: ' . $breakpointSize . ')';
+		}
+		return $sizes;
+	}
+
+	public static function getImaginator($id)
+	{
+		return (new static)->getImaginators()->find($id);
+	}
+
+	public static function generateImaginatorPicture(int $imaginator_id, string $locale = null, array $attributes = [])
+	{
+		//check if supplied attributes are allowed on the picture tag
+		self::checkAllowedPictureAttributes($attributes);
+		$appendableAttributes = [];
+
+		if (!$locale) {
+			$locale = locale();
+		}
+
+		foreach ($attributes as $attributeKey => $attribute) {
+			if (!isset($attributes[$attributeKey]) || !is_string($attribute)) {
+				$attributes[$attributeKey] = null;
+			}
+			$appendableAttributes[] = $attributeKey . '="' . $attribute . '"';
+		}
+
+		//prepare picture opening tag
+		if (!isset($html)) {
+			$html = '<picture ' . implode(' ', $appendableAttributes) . '>';
+		}
+
+		//get srcset sizes and imaginator
+		$srcsetSizes = self::getImaginatorSrcsetSizes();
+		$imaginator = self::getImaginator($imaginator_id);
+
+		//get lazyload array
+		$lazyloadArray = json_decode($imaginator->getLazyloadObject($locale), true);
+
+		//prepare picture sources and html markup
+		foreach ($lazyloadArray as $breakpoint => $lazyloadImage) {
+			$sources = [];
+			foreach ($lazyloadImage as $imageKey => $image) {
+				if ($imageKey === 'retina') {
+					$sources[] = url($image) . ' 2x';
+					continue;
+				}
+				$sources[] = url($image) . ' 1x';
+			}
+			$html .= '<source srcset="' . implode(',', $sources) . '" media="' . $srcsetSizes[$breakpoint] . '">';
+		}
+		//use srcset instead of src on img tag because of polyfill compatibility
+		$html .= '<img srcset="' . url($imaginator->imaginator_sources[0]->source) . '" alt="' . $imaginator->id . '">';
+		$html .= '</picture>';
+
+		//return one picture
+		return $html;
+	}
+
+	protected static function checkAllowedPictureAttributes(array $attributes = [])
+	{
+		foreach ($attributes as $attributeKey => $attribute) {
+			if (!in_array($attributeKey, config('imaginator.app.allowedPictureAttributes'))) {
+				throw new \Exception('Unallowed attribute', 500);
+			}
+		}
+
+		return true;
 	}
 }

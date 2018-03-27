@@ -9,6 +9,7 @@ Route::group([
 	Route::get('/', 'ImaginatorLogic@index')->name('index');
 	Route::get('/create/{template}', 'ImaginatorLogic@create')->name('create');
 	Route::get('/view/{template}', 'ImaginatorLogic@view')->name('view');
+	Route::get('/templates', 'ImaginatorLogic@templates')->name('templates');
 	Route::post('/store', 'ImaginatorLogic@store')->name('store');
 	Route::post('/upload', 'ImaginatorLogic@upload')->name('upload');
 	Route::delete('/{imaginator}', 'ImaginatorLogic@destroy')->name('destroy');

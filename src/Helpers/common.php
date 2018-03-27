@@ -1,6 +1,6 @@
 <?php
 
-if(!function_exists('asset_versioned')) {
+if (!function_exists('asset_versioned')) {
 	function asset_versioned($path)
 	{
 		if (!\File::exists(public_path($path))) {
@@ -11,7 +11,7 @@ if(!function_exists('asset_versioned')) {
 	}
 }
 
-if(!function_exists('body_class')) {
+if (!function_exists('body_class')) {
 	function body_class()
 	{
 		$route = \Route::currentRouteName();
@@ -27,14 +27,14 @@ if(!function_exists('body_class')) {
 	}
 }
 
-if(!function_exists('dummy_image')) {
+if (!function_exists('dummy_image')) {
 	function dummy_image($width, $height)
 	{
-		return route(config('imaginator.app.routes.as').'dummy-image', ['width' => $width, 'height' => $height]);
+		return route(config('imaginator.app.routes.as') . 'dummy-image', ['width' => $width, 'height' => $height]);
 	}
 }
 
-if(!function_exists('route_raw')) {
+if (!function_exists('route_raw')) {
 	function route_raw($name)
 	{
 		$route = app('router')->getRoutes()->getByName($name);
@@ -47,9 +47,18 @@ if(!function_exists('route_raw')) {
 	}
 }
 
-if(!function_exists('locale')) {
+if (!function_exists('locale')) {
 	function locale()
 	{
 		return app()->getLocale();
+	}
+}
+
+if (!function_exists('d')) {
+	function d()
+	{
+		array_map(function ($x) {
+			(new Illuminate\Support\Debug\Dumper)->dump($x);
+		}, func_get_args());
 	}
 }

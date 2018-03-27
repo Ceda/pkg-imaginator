@@ -170,23 +170,28 @@
 	&__select {
 		position: relative;
 		width: 100%;
-		line-height: 3em;
-		background: #eaeaea;
-		border-radius: 4px;
 		text-align: left;
-		padding-left: 23px;
 		border: none;
 		transition: all 0.05s ease-out;
 		font-size: 15px;
+	}
 
-		&.disabled {
-			pointer-events: none;
-			color: darkgray;
-			background: none;
-		}
+	&__select-all {
+		width: 100%;
+		line-height: 3em;
+		background: #eaeaea;
+		border-radius: 4px;
+		border: 0;
+		padding-left: 23px;
+		text-align: left;
 
 		&:focus {
 			outline: none;
+		}
+
+		&:hover {
+			cursor: pointer;
+			background-color: darken(lightgray, 10%);
 		}
 	}
 
@@ -201,9 +206,27 @@
 		right: 0;
 		background: lightgray;
 		border-radius: 0 4px 4px 0;
+		border: 0;
 
 		&.is-visible {
 			display: block;
+		}
+
+		&:focus {
+			outline: none;
+		}
+
+		&:hover {
+			cursor: pointer;
+			background-color: darken(lightgray, 10%);
+		}
+	}
+
+	&__select-all, &__select-none {
+		&.disabled {
+			pointer-events: none;
+			color: darkgray;
+			background: none;
 		}
 	}
 

@@ -82,19 +82,27 @@
 			<div class="ui container">
 				<div class="imaginator-create__variations">
 					<div class="ui right aligned container" style="margin-bottom: 15px">
-						<button class="imaginator-create__select"
+						<div class="imaginator-create__select">
+							<button
+								class="imaginator-create__select-all"
+								type="button"
 								:class="{'disabled': !hasAllSources}"
-						>
-							<div class="imaginator-create__select-all" @click="selectAllVariants">
+								@click.prevent="selectAllVariations"
+							>
 								<i class="checkmark box icon"></i>
 								Vybrat všechny
-							</div>
-							<div class="imaginator-create__select-none"
-								 @click="selectNoneVariants"
-								 v-if="isSomethingSelected && hasAllSources">
+							</button>
+
+							<button
+								class="imaginator-create__select-none"
+								type="button"
+								:class="{'disabled': !hasAllSources}"
+								@click.prevent="deselectAllVariations"
+								v-if="isSomethingSelected && hasAllSources"
+							>
 								<i class="remove box icon"></i>
-							</div>
-						</button>
+							</button>
+						</div>
 					</div>
 					<div v-for="variation in variations">
 						<div class="ui large basic fluid button imaginator-create__variation"
