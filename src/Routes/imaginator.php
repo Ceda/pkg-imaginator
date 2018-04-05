@@ -15,5 +15,5 @@ Route::group([
 	Route::delete('/{imaginator}', 'ImaginatorLogic@destroy')->name('destroy');
 	Route::delete('/', 'ImaginatorLogic@destroyAllUnused')->name('destroy.allUnused');
 
-	Route::get('dummy-image/{width}x{height}', 'ImaginatorLogic@dummy')->name('dummy-image');
+	Route::get('dummy-image/{width}x{height}', 'ImaginatorLogic@generateDummyImage')->name('dummy-image');
 });

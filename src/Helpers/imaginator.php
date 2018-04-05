@@ -20,3 +20,11 @@ if (!function_exists('make_imaginator_path')) {
 		return implode($glue, $parameters);
 	}
 }
+
+
+if (!function_exists('dummy_image')) {
+	function dummy_image($width, $height)
+	{
+		return route(config('imaginator.app.routes.as') . 'dummy-image', ['width' => $width, 'height' => $height]);
+	}
+}

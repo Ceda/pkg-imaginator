@@ -27,13 +27,6 @@ if (!function_exists('body_class')) {
 	}
 }
 
-if (!function_exists('dummy_image')) {
-	function dummy_image($width, $height)
-	{
-		return route(config('imaginator.app.routes.as') . 'dummy-image', ['width' => $width, 'height' => $height]);
-	}
-}
-
 if (!function_exists('route_raw')) {
 	function route_raw($name)
 	{

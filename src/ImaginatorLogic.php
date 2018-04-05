@@ -85,6 +85,9 @@ class ImaginatorLogic extends Controller
 		]);
 	}
 
+	/*
+	 * Properly set paths and save created files after pressing the save button.
+	 */
 	public function store(Request $request)
 	{
 		$imaginatorData = $request->input('imaginator');
@@ -100,7 +103,10 @@ class ImaginatorLogic extends Controller
 				$imaginatorSourceData['id'] = isset($imaginatorSourceData['id']) ? $imaginatorSourceData['id'] : null;
 				$parentFolder = md5($imaginator->id);
 
-				$folders = public_path(config('imaginator.app.storage.destination') . $parentFolder);
+				$folders = make_imaginator_path([
+					$this->destination,
+					$parentFolder,
+				]);
 
 				if (!File::exists($folders)) {
 					File::makeDirectory($folders, 0777, true);
@@ -148,6 +154,9 @@ class ImaginatorLogic extends Controller
 		], 200);
 	}
 
+	/*
+	 * Show overview of all Imaginators in one template.
+	 */
 	public function view(string $template)
 	{
 		if (strlen($template)) {
@@ -169,6 +178,9 @@ class ImaginatorLogic extends Controller
 		]);
 	}
 
+	/*
+	 * Show templates page.
+	 */
 	public function templates()
 	{
 		$imaginatorTemplates = ImaginatorTemplate::orderBy('label')->get();
@@ -178,7 +190,7 @@ class ImaginatorLogic extends Controller
 	}
 
 	/**
-	 * uploads a file (for dropzone)
+	 * Uploads a file for Imaginator
 	 * @param Request $request
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
@@ -233,6 +245,9 @@ class ImaginatorLogic extends Controller
 		}
 	}
 
+	/*
+	 * Destroy Imaginator by ID
+	 */
 	public function destroy($imaginatorId)
 	{
 		$imaginator = $this->getImaginatorModel()->where('id', $imaginatorId)->firstOrFail();
@@ -247,6 +262,10 @@ class ImaginatorLogic extends Controller
 		return redirect()->back();
 	}
 
+	/*
+	 * Destroy all unused Imaginators (use with caution, proper isUsed() function is required in order
+	 * to fully utilize this function. For further instructions refer to readme.md
+	 */
 	public function destroyAllUnused()
 	{
 		$imaginators = $this->getImaginatorModel()::get();
@@ -259,7 +278,10 @@ class ImaginatorLogic extends Controller
 		return redirect()->back();
 	}
 
-	public function dummy($width, $height)
+	/*
+	 * Dummy image generation function
+	 */
+	public function generateDummyImage($width, $height)
 	{
 		try {
 			$width = intval($width);
@@ -286,7 +308,7 @@ class ImaginatorLogic extends Controller
 		$model = config('imaginator.app.model');
 		return new $model;
 	}
-
+	//TODO old method, going to be removed soon, use generateResizesFromPath and crop by coordinates or anchor point
 	protected function generateResizesFromBase($imaginatorId, array $imaginatorSources)
 	{
 		ini_set('memory_limit', '-1');
@@ -345,11 +367,11 @@ class ImaginatorLogic extends Controller
 				$image = Image::make($sourceImage);
 				$image->fit($image->width(), $image->height(), null);
 
-				$folder = public_path(make_imaginator_path([
-					config('imaginator.app.storage.destination'),
+				$folder = make_imaginator_path([
+					$this->destination,
 					$parentFolder,
 					$variationName,
-				]));
+				]);
 
 				if (!File::exists($folder)) {
 					File::makeDirectory($folder, 0777, true);
@@ -376,5 +398,191 @@ class ImaginatorLogic extends Controller
 		} catch (\Exception $e) {
 			return response()->json(['error' => $e->getMessage()], 404);
 		}
+	}
+
+	/*
+	 * Generic automatization structure, the next few functions are used to make a clearer and simpler
+	 * process while working with Imaginator, removing the need to use the GUI. The following functions
+	 * are going to be used in the cropping process of the GUI after frontend remake. The generateResizesFromBase
+	 * function will be removed.
+	 */
+	protected static function generateResizesFromPath($imaginator, array $imaginatorSources, $anchorPoint = 'c')
+	{
+		ini_set('memory_limit', '-1');
+		set_time_limit(0);
+
+		try {
+			$parentFolder = md5($imaginator->id);
+			foreach ($imaginatorSources as $imaginatorSource) {
+				$variation = ImaginatorVariation::findOrFail($imaginatorSource->imaginator_variation_id);
+
+				if (!$variation) {
+					return response()->json(['error' => 'Invalid variation'], 400);
+				}
+				$variationName = slugify($variation->name);
+				$extension = pathinfo($imaginatorSource->source, PATHINFO_EXTENSION);
+				$baseName = str_replace('.' . $extension, '', pathinfo($imaginatorSource->source, PATHINFO_BASENAME));
+
+				$quality = $variation->quality;
+				$density = $variation->density;
+
+				if (!is_numeric($quality)) {
+					return response()->json(['error' => 'Invalid quality value (must be a number)'], 400);
+				}
+
+				$validDensities = config('imaginator.app.densities');
+				$validAnchorPoints = config('imaginator.app.anchor_points');
+
+				if (!array_key_exists($density, $validDensities)) {
+					return response()->json(['error' => 'Image density is not valid'], 400);
+				}
+
+				if (!array_key_exists($anchorPoint, $validAnchorPoints)) {
+					return response()->json(['error' => 'Anchor point is not valid'], 400);
+				}
+
+				$suffix = config('imaginator.app.densities')[$density]['suffix'];
+
+				if ($quality < 20) {
+					$quality = 20;
+				}
+
+				if ($quality > 100) {
+					$quality = 100;
+				}
+
+				$width = $variation->width;
+				$height = $variation->height;
+
+				if ($width < 10) {
+					$width = 10;
+				}
+
+				if ($width > 4000) {
+					$width = 4000;
+				}
+
+				if ($height < 10) {
+					$height = 10;
+				}
+
+				if ($height > 4000) {
+					$height = 4000;
+				}
+
+				$sourceImage = $imaginatorSource->source;
+
+				$imagePath = File::exists(public_path($sourceImage));
+
+				if (!File::exists($imagePath)) {
+					return response()->json(['error' => 'File not found'], 400);
+				}
+
+				$image = Image::make($imagePath);
+
+				$image->fit($width, $height, null, $validAnchorPoints[$anchorPoint]);
+
+				$folder = make_imaginator_path([
+					config('imaginator.app.storage.destination'),
+					$parentFolder,
+					$variationName,
+				]);
+
+				if (!File::exists($folder)) {
+					File::makeDirectory($folder, 0777, true);
+				}
+
+				$newFileName = $baseName . $suffix . '.' . $extension;
+
+				$imaginatorFilePath = make_imaginator_path([
+					config('imaginator.app.storage.destination'),
+					$parentFolder,
+					$variationName,
+					$newFileName,
+				]);
+
+				$imaginatorSourcePath = make_imaginator_path([
+					config('imaginator.app.storage.destination'),
+					$newFileName,
+				]);
+
+				//vytvorit subor ale nedegradovat kvalitu
+				$image->save(public_path($imaginatorFilePath), $quality);
+
+				$copySource = File::copy($imagePath, public_path($imaginatorSourcePath));
+
+				$updatedData = [
+					'source' => $imaginatorSourcePath,
+					'resized' => $imaginatorFilePath,
+				];
+
+				$imaginatorSource->update($updatedData);
+			}
+
+			return response()->json([
+				'status_code' => 200,
+				'status_message' => 'Success',
+			], 200);
+
+		} catch (\Exception $e) {
+			return response()->json(['error' => $e->getMessage()], 404);
+		}
+	}
+
+	protected static function generateSources(
+		ImaginatorTemplate $imaginatorTemplate,
+		$imaginator,
+		$imagePath,
+		$imaginatorSources = []
+	) {
+		//cycle all template variations
+		foreach ($imaginatorTemplate->imaginator_variations as $imaginatorVariation) {
+			//get fill data for new image source
+			$fillData = [
+				'imaginator_variation_id' => $imaginatorVariation->id,
+				'imaginator_id' => $imaginator->id,
+				'source' => $imagePath,
+			];
+
+			//generate new image source
+			$newImaginatorSource = new ImaginatorSource($fillData);
+			$newImaginatorSource->save();
+			//add if to the image sources array for the resize process
+			$imaginatorSources[] = $newImaginatorSource;
+		}
+
+		//choose proper image source defined by existence either from uploads-versioned or uploads
+		$file = File::exists(public_path($imagePath));
+
+		//if image sources were created and source file actually exists, rebuild images for Imaginator
+		if (count($imaginatorSources) > 0 && File::exists($file)) {
+			$rebuildStatus = self::generateResizesFromPath($imaginator, $imaginatorSources);
+			$rebuildStatusResponse = json_decode($rebuildStatus->getContent());
+
+			//if rebuild encounters an error, log it to console
+			if (isset($rebuildStatusResponse->error) && strlen($rebuildStatusResponse->error)) {
+				(new self)->error($rebuildStatusResponse->error);
+			}
+		}
+	}
+
+	protected function generateImaginator($image, $imaginatorTemplate)
+	{
+		$imaginatorCheck = $this->getImaginatorModel()::where('id', $image)->first();
+
+		//if imaginator already exists, skip cycle
+		if ($imaginatorCheck) {
+			return false;
+		}
+
+		//create new imaginator
+		$newImaginator = $this->getImaginatorModel();
+		$newImaginator->imaginator_template_id = $imaginatorTemplate->id;
+		$newImaginator->save();
+
+		//generate sources for imaginator
+		$this->generateSources($imaginatorTemplate, $newImaginator, $image);
+
+		return $newImaginator;
 	}
 }

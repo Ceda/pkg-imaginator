@@ -203,6 +203,11 @@ class Imaginator extends Model
 		return $html;
 	}
 
+	public static function getOrCreateImaginatorFromPath(string $imagePath)
+	{
+
+	}
+
 	protected static function checkAllowedPictureAttributes(array $attributes = [])
 	{
 		foreach ($attributes as $attributeKey => $attribute) {
