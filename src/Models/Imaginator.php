@@ -2,6 +2,7 @@
 
 namespace Bistroagency\Imaginator\Models;
 
+use Bistroagency\Imaginator\ImaginatorLogic;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\File;
@@ -149,9 +150,13 @@ class Imaginator extends Model
 		return $sizes;
 	}
 
-	public static function getImaginator($id)
+	public static function getImaginator($aliasOrId)
 	{
-		return (new static)->getImaginators()->find($id);
+		if (!is_string($aliasOrId)) {
+			return (new static)->getImaginators()->find($aliasOrId);
+		}
+
+		return (new static)->getImaginators()->where('alias', $aliasOrId)->first();
 	}
 
 	public static function generateImaginatorPicture(int $imaginator_id, string $locale = null, array $attributes = [])
@@ -203,9 +208,11 @@ class Imaginator extends Model
 		return $html;
 	}
 
-	public static function getOrCreateImaginatorFromPath(string $imagePath)
+	public static function getOrCreateImaginator($aliasOrIdOrPath, string $templateName, string $anchorPoint)
 	{
+		$template = ImaginatorTemplate::where('name', $templateName)->firstOrFail();
 
+		return ImaginatorLogic::getOrCreateImaginator($aliasOrIdOrPath, $template, $anchorPoint);
 	}
 
 	protected static function checkAllowedPictureAttributes(array $attributes = [])

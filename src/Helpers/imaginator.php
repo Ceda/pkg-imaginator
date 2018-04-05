@@ -7,6 +7,14 @@ if (!function_exists('get_imaginator')) {
 	}
 }
 
+if (!function_exists('get_or_create_imaginator')) {
+	//TODO better indentifier for image instead of $aliasOrIdOrPath
+	function get_or_create_imaginator($aliasOrIdOrPath, string $templateName, string $anchorPoint = 'c')
+	{
+		return \Bistroagency\Imaginator\Models\Imaginator::getOrCreateImaginator($aliasOrIdOrPath, $templateName, $anchorPoint);
+	}
+}
+
 if (!function_exists('generate_imaginator_picture')) {
 	function generate_imaginator_picture(int $id, string $locale = null, array $attributes = [])
 	{

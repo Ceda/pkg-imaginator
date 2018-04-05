@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class ImaginatorLogic extends Controller
 {
@@ -303,11 +304,35 @@ class ImaginatorLogic extends Controller
 		}
 	}
 
+	public static function getOrCreateImaginator($aliasOrIdOrPath, $imaginatorTemplate, $anchorPoint)
+	{
+
+		$imaginator = (new self)->getImaginatorModel()::getImaginator($aliasOrIdOrPath);
+
+		//if imaginator already exists, return imaginator
+		if ($imaginator) {
+			return $imaginator;
+		}
+
+		//create new imaginator
+		$newImaginator = (new self)->getImaginatorModel();
+		$newImaginator->imaginator_template_id = $imaginatorTemplate->id;
+		$newImaginator->alias = (is_string($aliasOrIdOrPath)) ? $aliasOrIdOrPath : null;
+		$newImaginator->save();
+
+		//generate sources for imaginator
+		(new self)::generateResizesFromPath($aliasOrIdOrPath, $newImaginator, $imaginatorTemplate->imaginator_variations, $anchorPoint);
+
+		//return new imaginator
+		return $newImaginator->with('imaginator_sources');
+	}
+
 	protected function getImaginatorModel()
 	{
 		$model = config('imaginator.app.model');
 		return new $model;
 	}
+
 	//TODO old method, going to be removed soon, use generateResizesFromPath and crop by coordinates or anchor point
 	protected function generateResizesFromBase($imaginatorId, array $imaginatorSources)
 	{
@@ -406,22 +431,21 @@ class ImaginatorLogic extends Controller
 	 * are going to be used in the cropping process of the GUI after frontend remake. The generateResizesFromBase
 	 * function will be removed.
 	 */
-	protected static function generateResizesFromPath($imaginator, array $imaginatorSources, $anchorPoint = 'c')
+	protected static function generateResizesFromPath($imagePath, $imaginator, Collection $imaginatorVariations, $anchorPoint)
 	{
 		ini_set('memory_limit', '-1');
 		set_time_limit(0);
 
 		try {
 			$parentFolder = md5($imaginator->id);
-			foreach ($imaginatorSources as $imaginatorSource) {
-				$variation = ImaginatorVariation::findOrFail($imaginatorSource->imaginator_variation_id);
-
+			foreach ($imaginatorVariations as $variation) {
 				if (!$variation) {
 					return response()->json(['error' => 'Invalid variation'], 400);
 				}
+
 				$variationName = slugify($variation->name);
-				$extension = pathinfo($imaginatorSource->source, PATHINFO_EXTENSION);
-				$baseName = str_replace('.' . $extension, '', pathinfo($imaginatorSource->source, PATHINFO_BASENAME));
+				$extension = pathinfo($imagePath, PATHINFO_EXTENSION);
+				$baseName = str_replace('.' . $extension, '', pathinfo($imagePath, PATHINFO_BASENAME));
 
 				$quality = $variation->quality;
 				$density = $variation->density;
@@ -470,20 +494,18 @@ class ImaginatorLogic extends Controller
 					$height = 4000;
 				}
 
-				$sourceImage = $imaginatorSource->source;
+				$imageFullPath = public_path($imagePath);
 
-				$imagePath = File::exists(public_path($sourceImage));
-
-				if (!File::exists($imagePath)) {
+				if (!File::exists($imageFullPath)) {
 					return response()->json(['error' => 'File not found'], 400);
 				}
 
-				$image = Image::make($imagePath);
+				$image = Image::make($imageFullPath);
 
 				$image->fit($width, $height, null, $validAnchorPoints[$anchorPoint]);
 
 				$folder = make_imaginator_path([
-					config('imaginator.app.storage.destination'),
+					(new self)->destination,
 					$parentFolder,
 					$variationName,
 				]);
@@ -509,14 +531,17 @@ class ImaginatorLogic extends Controller
 				//vytvorit subor ale nedegradovat kvalitu
 				$image->save(public_path($imaginatorFilePath), $quality);
 
-				$copySource = File::copy($imagePath, public_path($imaginatorSourcePath));
+				$copySource = File::copy($imageFullPath, public_path($imaginatorSourcePath));
 
-				$updatedData = [
+				$fillData = [
+					'imaginator_variation_id'=> $variation->id,
+					'imaginator_id' => $imaginator->id,
 					'source' => $imaginatorSourcePath,
 					'resized' => $imaginatorFilePath,
 				];
 
-				$imaginatorSource->update($updatedData);
+				$imaginatorSource = new ImaginatorSource($fillData);
+				$imaginatorSource->save();
 			}
 
 			return response()->json([
@@ -527,62 +552,5 @@ class ImaginatorLogic extends Controller
 		} catch (\Exception $e) {
 			return response()->json(['error' => $e->getMessage()], 404);
 		}
-	}
-
-	protected static function generateSources(
-		ImaginatorTemplate $imaginatorTemplate,
-		$imaginator,
-		$imagePath,
-		$imaginatorSources = []
-	) {
-		//cycle all template variations
-		foreach ($imaginatorTemplate->imaginator_variations as $imaginatorVariation) {
-			//get fill data for new image source
-			$fillData = [
-				'imaginator_variation_id' => $imaginatorVariation->id,
-				'imaginator_id' => $imaginator->id,
-				'source' => $imagePath,
-			];
-
-			//generate new image source
-			$newImaginatorSource = new ImaginatorSource($fillData);
-			$newImaginatorSource->save();
-			//add if to the image sources array for the resize process
-			$imaginatorSources[] = $newImaginatorSource;
-		}
-
-		//choose proper image source defined by existence either from uploads-versioned or uploads
-		$file = File::exists(public_path($imagePath));
-
-		//if image sources were created and source file actually exists, rebuild images for Imaginator
-		if (count($imaginatorSources) > 0 && File::exists($file)) {
-			$rebuildStatus = self::generateResizesFromPath($imaginator, $imaginatorSources);
-			$rebuildStatusResponse = json_decode($rebuildStatus->getContent());
-
-			//if rebuild encounters an error, log it to console
-			if (isset($rebuildStatusResponse->error) && strlen($rebuildStatusResponse->error)) {
-				(new self)->error($rebuildStatusResponse->error);
-			}
-		}
-	}
-
-	protected function generateImaginator($image, $imaginatorTemplate)
-	{
-		$imaginatorCheck = $this->getImaginatorModel()::where('id', $image)->first();
-
-		//if imaginator already exists, skip cycle
-		if ($imaginatorCheck) {
-			return false;
-		}
-
-		//create new imaginator
-		$newImaginator = $this->getImaginatorModel();
-		$newImaginator->imaginator_template_id = $imaginatorTemplate->id;
-		$newImaginator->save();
-
-		//generate sources for imaginator
-		$this->generateSources($imaginatorTemplate, $newImaginator, $image);
-
-		return $newImaginator;
 	}
 }
