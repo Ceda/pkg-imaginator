@@ -1,5 +1,5 @@
 {
-    "name": "bistroagency/imaginator",
+    "name": "bistroagency/pkg-imaginator",
     "type": "laravel",
     "license": "MIT",
     "authors": [
