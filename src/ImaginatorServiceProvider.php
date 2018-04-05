@@ -91,6 +91,13 @@ class ImaginatorServiceProvider extends ServiceProvider
 		], 'imaginator-assets');
 
 		/*
+		* Publish migrations.
+		*/
+		$this->publishes([
+			__DIR__ . '/Database/migrations' => base_path('/database/migrations')
+		], 'imaginator-migrations');
+
+		/*
 		* Register packaged ependencies.
 		*/
 		$this->app->register('Intervention\Image\ImageServiceProvider');
