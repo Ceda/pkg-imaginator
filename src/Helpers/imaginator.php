@@ -7,6 +7,13 @@ if (!function_exists('get_imaginator')) {
 	}
 }
 
+if (!function_exists('get_imaginator_object')) {
+	function get_imaginator_object(int $id)
+	{
+		return \Bistroagency\Imaginator\Facades\Imaginator::getImaginator($id)->getLazyloadObject(locale());
+	}
+}
+
 if (!function_exists('get_or_create_imaginator')) {
 	//TODO better indentifier for image instead of $aliasOrIdOrPath
 	function get_or_create_imaginator($aliasOrIdOrPath, string $templateName, string $anchorPoint = 'c')
