@@ -35,8 +35,8 @@ class CleanFiles extends Command
 	public function __construct()
 	{
 		parent::__construct();
-		$this->tempDestination = config('imaginator.app.storage.tempDestination');
-		$this->destination = config('imaginator.app.storage.destination');
+		$this->tempDestination = public_path(config('imaginator.app.storage.tempDestination'));
+		$this->destination = public_path(config('imaginator.app.storage.destination'));
 		$this->startTime = microtime(true);
 	}
 
@@ -71,7 +71,6 @@ class CleanFiles extends Command
 				if(!in_array($dirname, $variationNames)){
 					File::deleteDirectory($dir);
 				}
-
 			}
 		}
 
