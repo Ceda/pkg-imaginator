@@ -369,7 +369,8 @@ const ImaginatorCreate = {
 					}
 
 					variation.crop = imageToCrop.croppie({
-						viewport: cropViewport
+						viewport: cropViewport,
+						enableExif: true,
 					});
 				},
 

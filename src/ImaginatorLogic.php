@@ -324,7 +324,7 @@ class ImaginatorLogic extends Controller
 		(new self)::generateResizesFromPath($aliasOrIdOrPath, $newImaginator, $imaginatorTemplate->imaginator_variations, $anchorPoint);
 
 		//return new imaginator
-		return $newImaginator->with('imaginator_sources');
+		return $newImaginator;
 	}
 
 	protected function getImaginatorModel()
