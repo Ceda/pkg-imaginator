@@ -125,7 +125,7 @@
 							:class="{'disabled': !isSomethingSelected}"
 							style="text-align:left; margin-bottom:15px;">
 						<i class="folder open icon"></i>
-						Vybrat soubor pro @{{ numberOfSelected }} variace
+						Změnit soubor pro @{{ numberOfSelected }} variace
 					</button>
 
 					<button class="fluid large teal ui button"
@@ -133,7 +133,7 @@
 							v-if="isSomethingResizing"
 							style="text-align:left;">
 						<i class="check icon icon"></i>
-						Ořezat všechny variace
+						Ořezat všechny vybrané variace
 					</button>
 
 				</div>
