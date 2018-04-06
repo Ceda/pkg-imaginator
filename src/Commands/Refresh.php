@@ -51,8 +51,8 @@ class Refresh extends Command
 		parent::__construct();
 		$this->startTime = microtime(true);
 		$this->schemas = collect(config('imaginator.schemas'));
-		$this->tempDestination = config('imaginator.app.storage.tempDestination');
-		$this->destination = config('imaginator.app.storage.destination');
+		$this->tempDestination = public_path(config('imaginator.app.storage.tempDestination'));
+		$this->destination = public_path(config('imaginator.app.storage.destination'));
 	}
 
 	public function getElapsedTime()
