@@ -16,9 +16,9 @@ if (!function_exists('get_or_create_imaginator')) {
 }
 
 if (!function_exists('generate_imaginator_picture')) {
-	function generate_imaginator_picture(int $id, string $locale = null, array $attributes = [])
+	function generate_imaginator_picture($imaginator, string $locale = null, array $attributes = [])
 	{
-		return \Bistroagency\Imaginator\Facades\Imaginator::generateImaginatorPicture($id, $locale, $attributes);
+		return \Bistroagency\Imaginator\Facades\Imaginator::generateImaginatorPicture($imaginator, $locale, $attributes);
 	}
 }
 

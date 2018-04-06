@@ -23,8 +23,12 @@ class Imaginator extends Model
 
 	protected $imaginators;
 
-	public function getImaginators()
+	public function getImaginators($fresh = false)
 	{
+		if($fresh) {
+			$this->imaginators = app('ImaginatorRepository')->fresh();
+		}
+
 		if ($this->imaginators !== null) {
 			return $this->imaginators;
 		}
@@ -36,7 +40,7 @@ class Imaginator extends Model
 
 	public function imaginator_template()
 	{
-		return $this->belongsTo(ImaginatorTemplate::class);
+		return $this->belongsTo(ImaginatorTemplate::class)->with('imaginator_variations');
 	}
 
 	public function imaginator_sources()
@@ -159,7 +163,7 @@ class Imaginator extends Model
 		return (new static)->getImaginators()->where('alias', $aliasOrId)->first();
 	}
 
-	public static function generateImaginatorPicture(int $imaginator_id, string $locale = null, array $attributes = [])
+	public static function generateImaginatorPicture($imaginator, string $locale = null, array $attributes = [])
 	{
 		//check if supplied attributes are allowed on the picture tag
 		self::checkAllowedPictureAttributes($attributes);
@@ -183,7 +187,6 @@ class Imaginator extends Model
 
 		//get srcset sizes and imaginator
 		$srcsetSizes = self::getImaginatorSrcsetSizes();
-		$imaginator = self::getImaginator($imaginator_id);
 
 		//get lazyload array
 		$lazyloadArray = json_decode($imaginator->getLazyloadObject($locale), true);

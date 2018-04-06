@@ -333,7 +333,7 @@ class ImaginatorLogic extends Controller
 		return new $model;
 	}
 
-	//TODO old method, going to be removed soon, use generateResizesFromPath and crop by coordinates or anchor point
+	//TODO old method, it's going to be removed soon, use generateResizesFromPath and crop by coordinates or anchor point
 	protected function generateResizesFromBase($imaginatorId, array $imaginatorSources)
 	{
 		ini_set('memory_limit', '-1');

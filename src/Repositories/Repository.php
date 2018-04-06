@@ -15,5 +15,12 @@ abstract class Repository
 		return $this->collection;
 	}
 
+	public function fresh()
+	{
+		$this->collection = $this->collect();
+
+		return $this->collection;
+	}
+
 	abstract protected function collect();
 }

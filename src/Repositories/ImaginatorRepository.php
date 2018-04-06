@@ -10,7 +10,7 @@ class ImaginatorRepository extends Repository
 	{
 		return Imaginator::with([
 			'imaginator_sources',
-			'imaginator_template'
+			'imaginator_template',
 		])
 			->get();
 	}
