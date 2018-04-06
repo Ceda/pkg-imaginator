@@ -187,7 +187,7 @@ class ImaginatorLogic extends Controller
 		$aliasOrId = is_numeric($aliasOrId) ? intval($aliasOrId) : $aliasOrId;
 		$imaginator = $this->getImaginatorModel()::getImaginator($aliasOrId);
 
-		if(!$imaginator) {
+		if (!$imaginator) {
 			return response()->json([
 				'status_code' => 404,
 				'status_message' => 'Imaginator not found',
@@ -343,7 +343,8 @@ class ImaginatorLogic extends Controller
 		$newImaginator->save();
 
 		//generate sources for imaginator
-		(new self)::generateResizesFromPath($aliasOrIdOrPath, $newImaginator, $imaginatorTemplate->imaginator_variations, $anchorPoint);
+		(new self)::generateResizesFromPath($aliasOrIdOrPath, $newImaginator,
+			$imaginatorTemplate->imaginator_variations, $anchorPoint);
 
 		//return new imaginator
 		return $newImaginator;
@@ -453,8 +454,12 @@ class ImaginatorLogic extends Controller
 	 * are going to be used in the cropping process of the GUI after frontend remake. The generateResizesFromBase
 	 * function will be removed.
 	 */
-	protected static function generateResizesFromPath($imagePath, $imaginator, Collection $imaginatorVariations, $anchorPoint)
-	{
+	protected static function generateResizesFromPath(
+		$imagePath,
+		$imaginator,
+		Collection $imaginatorVariations,
+		$anchorPoint
+	) {
 		ini_set('memory_limit', '-1');
 		set_time_limit(0);
 
@@ -537,6 +542,7 @@ class ImaginatorLogic extends Controller
 				}
 
 				$newFileName = $baseName . $suffix . '.' . $extension;
+				$originalFileName = $baseName . '.' . $extension;
 
 				$imaginatorFilePath = make_imaginator_path([
 					config('imaginator.app.storage.destination'),
@@ -547,16 +553,15 @@ class ImaginatorLogic extends Controller
 
 				$imaginatorSourcePath = make_imaginator_path([
 					config('imaginator.app.storage.destination'),
-					$newFileName,
+					$parentFolder,
+					$originalFileName,
 				]);
 
 				//vytvorit subor ale nedegradovat kvalitu
 				$image->save(public_path($imaginatorFilePath), $quality);
 
-				$copySource = File::copy($imageFullPath, public_path($imaginatorSourcePath));
-
 				$fillData = [
-					'imaginator_variation_id'=> $variation->id,
+					'imaginator_variation_id' => $variation->id,
 					'imaginator_id' => $imaginator->id,
 					'source' => $imaginatorSourcePath,
 					'resized' => $imaginatorFilePath,
@@ -564,6 +569,17 @@ class ImaginatorLogic extends Controller
 
 				$imaginatorSource = new ImaginatorSource($fillData);
 				$imaginatorSource->save();
+			}
+
+			$filePath = public_path($imagePath);
+			$fileName = pathinfo($filePath, PATHINFO_BASENAME);
+
+			if (File::exists($filePath)) {
+				File::copy($filePath, make_imaginator_path([
+					(new self)->destination,
+					$parentFolder,
+					$fileName,
+				]));
 			}
 
 			return response()->json([

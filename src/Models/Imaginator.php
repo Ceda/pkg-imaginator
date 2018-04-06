@@ -165,6 +165,9 @@ class Imaginator extends Model
 
 	public static function generateImaginatorPicture($imaginator, string $locale = null, array $attributes = [])
 	{
+		if($imaginator->imaginator_sources->count() < 1) {
+			throw new \Exception('Imaginator without sources');
+		}
 		//check if supplied attributes are allowed on the picture tag
 		self::checkAllowedPictureAttributes($attributes);
 		$appendableAttributes = [];
