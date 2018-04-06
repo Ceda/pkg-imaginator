@@ -180,6 +180,28 @@ class ImaginatorLogic extends Controller
 	}
 
 	/*
+	 * Get one imaginator lazyload object
+	 */
+	public function getLazyloadObject($aliasOrId)
+	{
+		$aliasOrId = is_numeric($aliasOrId) ? intval($aliasOrId) : $aliasOrId;
+		$imaginator = $this->getImaginatorModel()::getImaginator($aliasOrId);
+
+		if(!$imaginator) {
+			return response()->json([
+				'status_code' => 404,
+				'status_message' => 'Imaginator not found',
+			], 404);
+		}
+
+		return response()->json([
+			'status_code' => 200,
+			'status_message' => 'Success',
+			'lazyloadObject' => $imaginator->getLazyloadObject(),
+		], 200);
+	}
+
+	/*
 	 * Show templates page.
 	 */
 	public function templates()
