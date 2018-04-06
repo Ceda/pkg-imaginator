@@ -22,5 +22,15 @@
         "psr-4": {
             "Bistroagency\\Imaginator\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Bistroagency\\Imaginator\\ImaginatorServiceProvider"
+            ],
+            "aliases": {
+                "Debugbar": "Bistroagency\\Imaginator\\Facades\\Imaginator"
+            }
+        }
     }
 }

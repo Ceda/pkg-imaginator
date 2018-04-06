@@ -12,6 +12,7 @@
     "croppie": "2.6.2",
     "dropzone": "5.4.0",
     "es6-promise": "4.2.4",
+    "exif-js": "^2.3.0",
     "lodash": "4.2.1",
     "picturefill": "3.0.2",
     "promise-polyfill": "7.1.0",

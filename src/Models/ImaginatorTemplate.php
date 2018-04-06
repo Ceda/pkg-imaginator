@@ -16,10 +16,6 @@ class ImaginatorTemplate extends Model
 		'deleted_at',
 	];
 
-	protected $with = [
-		'imaginator_variations'
-	];
-
 	public function imaginator_variations()
 	{
 		return $this->hasMany(ImaginatorVariation::class);
