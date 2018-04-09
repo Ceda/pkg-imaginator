@@ -200,6 +200,12 @@ return [
 
 As of now there are two ways to display all the 'Images' or as the package calls them 'Imaginators' you either have to go to the route `route('imaginator.index')` or by clicking on an input and choosing the `Přehlad` tab.
 
+**Getting one specific Imaginator**
+
+* To get one specific Imaginator if you know it's ID or Alias call the `get_imaginator((required) $aliasOrId)` function.
+* If you want to create or get an Imaginator by it's path use the `get_or_create_imaginator((required) $aliasOrPathOrId, (required) $templateSlug, (optional) $anchorPoint)` function.
+* If the Imaginator exists it will return the Imaginator instance if not, it will create a new one and return it. It will use the source files path as an alias for the Imaginator.
+
 ## Browser support
 
 **All the amazing platforms you can run our Imaginator on**
