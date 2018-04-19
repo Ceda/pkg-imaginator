@@ -203,8 +203,29 @@ As of now there are two ways to display all the 'Images' or as the package calls
 **Getting one specific Imaginator**
 
 * To get one specific Imaginator if you know it's ID or Alias call the `get_imaginator((required) $aliasOrId)` function.
-* If you want to create or get an Imaginator by it's path use the `get_or_create_imaginator((required) $aliasOrPathOrId, (required) $templateSlug, (optional) $anchorPoint)` function.
+* If you want to create or get an Imaginator by it's path use the `get_or_create_imaginator((required [array or string]) $resources, (required) $templateSlug, (optional) $anchorPoint)` function.
 * If the Imaginator exists it will return the Imaginator instance if not, it will create a new one and return it. It will use the source files path as an alias for the Imaginator.
+* If you pass an array as the first parameter, there are two required keys that the array needs to have. `alias` and `default`.
+* **Example:**
+
+~~~~
+get_or_create_imaginator([
+    'alias' => 'trubadur', //alias under which the imaginator will be saved and retrieved by
+    'default' => '/storage/bullshit/krak.jpg', //fallback source to generate variations from
+], 'gallery');
+~~~~
+
+* If you want to use different sources for different variations, just add the relative path to the file into the array, using the variation slug as the key.
+* **Example:**
+
+~~~~
+get_or_create_imaginator([
+    'alias' => 'trubadur', //alias under which the imaginator will be saved and retrieved by
+    'default' => '/storage/images/obraz.jpg', //fallback source to generate variations from
+    'picture' => '/storage/images/priatel_ludstva.jpg', //the variation with slug picture will use this image as it's source
+    'picture-retina' => '/storage/images/priatel_ludstva@2.jpg', //the variation with slug picture-retina will use this image as it's source
+], 'gallery');
+~~~~
 
 ## Browser support
 
