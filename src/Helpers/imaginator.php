@@ -15,7 +15,6 @@ if (!function_exists('get_imaginator_object')) {
 }
 
 if (!function_exists('get_or_create_imaginator')) {
-	//TODO better indentifier for image instead of $aliasOrIdOrPath
 	function get_or_create_imaginator($resources, string $templateName, string $anchorPoint = 'c')
 	{
 		return \Bistroagency\Imaginator\Models\Imaginator::getOrCreateImaginator($resources, $templateName, $anchorPoint);
