@@ -21,7 +21,6 @@ class CreateImaginatorVariationsTable extends Migration
 				->on('imaginator_templates')
 				->onDelete('cascade');
 			$table->string('name');
-			$table->string('slug')->nullable();
 			$table->string('breakpoint', 25)->nullable();
 			$table->string('locale', 10)->nullable();
 			$table->string('density', 25)->nullable();
