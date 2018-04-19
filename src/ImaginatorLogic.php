@@ -326,28 +326,46 @@ class ImaginatorLogic extends Controller
 		}
 	}
 
-	public static function getOrCreateImaginator($aliasOrIdOrPath, $imaginatorTemplate, $anchorPoint)
+	public static function getOrCreateImaginator($resources, $imaginatorTemplate, $anchorPoint)
 	{
+		//if an array was supplied instead of a string or int, different rules apply, validate data and act upon it
+		if (is_array($resources)) {
+			if (!array_key_exists('alias', $resources)) {
+				throw new \Exception('Missing alias parameter in supplied array');
+			}
 
-		$imaginator = (new self)->getImaginatorModel()::getImaginator($aliasOrIdOrPath);
+			if (!array_key_exists('default', $resources)) {
+				throw new \Exception('Missing default source parameter in supplied array');
+			}
+		}
+
+		$imaginator = (new self)->getImaginatorModel()::getImaginator(
+			(is_string($resources)) ? $resources : $resources['alias']
+		);
 
 		//if imaginator already exists, return imaginator
 		if ($imaginator) {
 			return $imaginator;
 		}
 
-		//create new imaginator
+		//create new imaginator if old doesn't exist
 		$newImaginator = (new self)->getImaginatorModel();
 		$newImaginator->imaginator_template_id = $imaginatorTemplate->id;
-		$newImaginator->alias = (is_string($aliasOrIdOrPath)) ? $aliasOrIdOrPath : null;
+		$newImaginator->alias = (is_string($resources)) ? $resources : null;
+		if(is_array($resources)) {
+			$newImaginator->alias = $resources['alias'];
+		}
 		$newImaginator->save();
 
 		//generate sources for imaginator
-		(new self)::generateResizesFromPath($aliasOrIdOrPath, $newImaginator,
-			$imaginatorTemplate->imaginator_variations, $anchorPoint);
+		(new self)::generateResizesFromPath(
+			$resources,
+			$newImaginator,
+			$imaginatorTemplate->imaginator_variations,
+			$anchorPoint);
 
 		//return new imaginator
-		return $newImaginator;
+		return $newImaginator->fresh();
 	}
 
 	protected function getImaginatorModel()
@@ -375,7 +393,7 @@ class ImaginatorLogic extends Controller
 					return false;
 				}
 
-				$variationName = slugify($variation->name);
+				$variationName = $variation->slug;
 				$extension = pathinfo($imaginatorSource['source'], PATHINFO_EXTENSION);
 				$baseName = str_replace('.' . $extension, '', pathinfo($imaginatorSource['source'], PATHINFO_BASENAME));
 
@@ -455,7 +473,7 @@ class ImaginatorLogic extends Controller
 	 * function will be removed.
 	 */
 	protected static function generateResizesFromPath(
-		$imagePath,
+		$resources,
 		$imaginator,
 		Collection $imaginatorVariations,
 		$anchorPoint
@@ -470,7 +488,15 @@ class ImaginatorLogic extends Controller
 					return response()->json(['error' => 'Invalid variation'], 400);
 				}
 
-				$variationName = slugify($variation->name);
+				$imagePath = $resources;
+
+				if (is_array($resources)) {
+					$imagePath = (array_key_exists($variation->slug, $resources))
+						? $resources[$variation->slug]
+						: $resources['default'];
+				}
+
+				$variationName = $variation->slug;
 				$extension = pathinfo($imagePath, PATHINFO_EXTENSION);
 				$baseName = str_replace('.' . $extension, '', pathinfo($imagePath, PATHINFO_BASENAME));
 
@@ -557,6 +583,14 @@ class ImaginatorLogic extends Controller
 					$originalFileName,
 				]);
 
+				$originalImageDestinationPath = make_imaginator_path([
+					(new self)->destination,
+					$parentFolder,
+					$originalFileName,
+				]);
+
+				$originalFilePath = public_path($imagePath);
+
 				//vytvorit subor ale nedegradovat kvalitu
 				$image->save(public_path($imaginatorFilePath), $quality);
 
@@ -567,19 +601,12 @@ class ImaginatorLogic extends Controller
 					'resized' => $imaginatorFilePath,
 				];
 
+				if (File::exists($originalFilePath) && !File::exists($originalImageDestinationPath)) {
+					File::copy($originalFilePath, $originalImageDestinationPath);
+				}
+
 				$imaginatorSource = new ImaginatorSource($fillData);
 				$imaginatorSource->save();
-			}
-
-			$filePath = public_path($imagePath);
-			$fileName = pathinfo($filePath, PATHINFO_BASENAME);
-
-			if (File::exists($filePath)) {
-				File::copy($filePath, make_imaginator_path([
-					(new self)->destination,
-					$parentFolder,
-					$fileName,
-				]));
 			}
 
 			return response()->json([

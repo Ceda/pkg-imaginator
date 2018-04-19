@@ -156,6 +156,10 @@ class Imaginator extends Model
 
 	public static function getImaginator($aliasOrId)
 	{
+		if($aliasOrId instanceof self) {
+			return $aliasOrId;
+		}
+
 		if (!is_string($aliasOrId)) {
 			return (new static)->getImaginators()->find($aliasOrId);
 		}
@@ -219,11 +223,11 @@ class Imaginator extends Model
 		return $html;
 	}
 
-	public static function getOrCreateImaginator($aliasOrIdOrPath, string $templateName, string $anchorPoint)
+	public static function getOrCreateImaginator($resources, string $templateName, string $anchorPoint)
 	{
 		$template = ImaginatorTemplate::where('name', $templateName)->firstOrFail();
 
-		return ImaginatorLogic::getOrCreateImaginator($aliasOrIdOrPath, $template, $anchorPoint);
+		return ImaginatorLogic::getOrCreateImaginator($resources, $template, $anchorPoint);
 	}
 
 	protected static function checkAllowedPictureAttributes(array $attributes = [])

@@ -18,6 +18,7 @@ class ImaginatorVariation extends Model
 	protected $fillable = [
 		'imaginator_template_id',
 		'name',
+		'slug',
 		'breakpoint',
 		'locale',
 		'density',
