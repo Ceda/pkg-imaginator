@@ -393,7 +393,7 @@ class ImaginatorLogic extends Controller
 					return false;
 				}
 
-				$variationName = slugify($variation->name);
+				$variationName = $variation->slug;
 				$extension = pathinfo($imaginatorSource['source'], PATHINFO_EXTENSION);
 				$baseName = str_replace('.' . $extension, '', pathinfo($imaginatorSource['source'], PATHINFO_BASENAME));
 
@@ -491,12 +491,12 @@ class ImaginatorLogic extends Controller
 				$imagePath = $resources;
 
 				if (is_array($resources)) {
-					$imagePath = (array_key_exists(slugify($variation->name), $resources))
-						? $resources[slugify($variation->name)]
+					$imagePath = (array_key_exists($variation->slug, $resources))
+						? $resources[$variation->slug]
 						: $resources['default'];
 				}
 
-				$variationName = slugify($variation->name);
+				$variationName = $variation->slug;
 				$extension = pathinfo($imagePath, PATHINFO_EXTENSION);
 				$baseName = str_replace('.' . $extension, '', pathinfo($imagePath, PATHINFO_BASENAME));
 
