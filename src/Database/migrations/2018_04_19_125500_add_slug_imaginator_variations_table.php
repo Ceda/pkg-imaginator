@@ -14,7 +14,7 @@ class AddSlugImaginatorVariationsTable extends Migration
 	public function up()
 	{
 		Schema::table('imaginator_variations', function (Blueprint $table) {
-			$table->string('slug')->nullable()->after('name');
+			$table->string('slug')->nullable()->index()->after('name');
 		});
 	}
 
@@ -26,6 +26,7 @@ class AddSlugImaginatorVariationsTable extends Migration
 	public function down()
 	{
 		Schema::table('imaginator_variations', function (Blueprint $table) {
+			$table->dropindex(['slug']);
 			$table->dropColumn(['slug']);
 		});
 	}
