@@ -156,6 +156,10 @@ class Imaginator extends Model
 
 	public static function getImaginator($aliasOrId)
 	{
+		if($aliasOrId instanceof self) {
+			return $aliasOrId;
+		}
+
 		if (!is_string($aliasOrId)) {
 			return (new static)->getImaginators()->find($aliasOrId);
 		}
