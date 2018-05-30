@@ -352,7 +352,7 @@ class ImaginatorLogic extends Controller
 		$newImaginator = (new self)->getImaginatorModel();
 		$newImaginator->imaginator_template_id = $imaginatorTemplate->id;
 		$newImaginator->alias = (is_string($resources)) ? $resources : null;
-		if(is_array($resources)) {
+		if (is_array($resources)) {
 			$newImaginator->alias = $resources['alias'];
 		}
 		$newImaginator->save();
@@ -452,7 +452,13 @@ class ImaginatorLogic extends Controller
 					$newFileName,
 				]);
 
-				$image->save(public_path($imaginatorFilePath), $quality);
+				$fullImaginatorFilePath = public_path($imaginatorFilePath);
+
+				$image->save($fullImaginatorFilePath, $quality);
+
+				if (strtolower(pathinfo($fullImaginatorFilePath, PATHINFO_EXTENSION)) === 'png') {
+					compress_png($fullImaginatorFilePath);
+				}
 
 				$generatedResizePaths[] = [
 					'resized' => $imaginatorFilePath,
@@ -591,8 +597,14 @@ class ImaginatorLogic extends Controller
 
 				$originalFilePath = public_path($imagePath);
 
+				$fullImaginatorFilePath = public_path($imaginatorFilePath);
+
 				//vytvorit subor ale nedegradovat kvalitu
-				$image->save(public_path($imaginatorFilePath), $quality);
+				$image->save($fullImaginatorFilePath, $quality);
+
+				if (strtolower(pathinfo($fullImaginatorFilePath, PATHINFO_EXTENSION)) === 'png') {
+					compress_png($fullImaginatorFilePath);
+				}
 
 				$fillData = [
 					'imaginator_variation_id' => $variation->id,

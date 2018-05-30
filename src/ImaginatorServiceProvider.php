@@ -22,6 +22,8 @@ class ImaginatorServiceProvider extends ServiceProvider
 		*/
 		require_once __DIR__ . '/Helpers/common.php';
 		require_once __DIR__ . '/Helpers/imaginator.php';
+		require_once __DIR__ . '/Helpers/compress_png.php';
+
 		if (!function_exists('push_flash')) {
 			require_once __DIR__ . '/Helpers/alerts.php';
 		}
@@ -111,6 +113,7 @@ class ImaginatorServiceProvider extends ServiceProvider
 		/*
 		 * Register Imaginator repository for getters
 		 */
-		$this->app->singleton('ImaginatorRepository', \Bistroagency\Imaginator\Repositories\ImaginatorRepository::class);
+		$this->app->singleton('ImaginatorRepository',
+			\Bistroagency\Imaginator\Repositories\ImaginatorRepository::class);
 	}
 }
