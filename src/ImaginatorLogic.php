@@ -456,7 +456,10 @@ class ImaginatorLogic extends Controller
 
 				$image->save($fullImaginatorFilePath, $quality);
 
-				if (strtolower(pathinfo($fullImaginatorFilePath, PATHINFO_EXTENSION)) === 'png') {
+				if (
+					strtolower(pathinfo($fullImaginatorFilePath, PATHINFO_EXTENSION)) === 'png'
+					&& config('imaginator.app.compress_png')
+				) {
 					compress_png($fullImaginatorFilePath);
 				}
 
@@ -602,7 +605,10 @@ class ImaginatorLogic extends Controller
 				//vytvorit subor ale nedegradovat kvalitu
 				$image->save($fullImaginatorFilePath, $quality);
 
-				if (strtolower(pathinfo($fullImaginatorFilePath, PATHINFO_EXTENSION)) === 'png') {
+				if (
+					strtolower(pathinfo($fullImaginatorFilePath, PATHINFO_EXTENSION)) === 'png'
+					&& config('imaginator.app.compress_png')
+				) {
 					compress_png($fullImaginatorFilePath);
 				}
 
