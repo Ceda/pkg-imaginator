@@ -22,7 +22,8 @@
 		</div>
 		<div class="eight wide column">
 			<div class="imaginator-create__headline">
-				<strong>@{{ template.label }}</strong><span v-if="template.description"> - @{{ template.description }}</span>
+				<strong>@{{ template.label }}</strong><span
+					v-if="template.description"> - @{{ template.description }}</span>
 			</div>
 			<div class="ui segment imaginator-create__dropzone" data-url="{{ route('imaginator.upload') }}">
 				<div class="imaginator-create__thumbnail-wrap"
@@ -73,7 +74,8 @@
 						</div>
 					</div>
 				</div>
-				<div :class="{'active': !allThumbnailsShown && hasAllSources}" class="ui big inverted dimmer imaginator-create__dropzone-loader">
+				<div :class="{'active': !allThumbnailsShown && hasAllSources}"
+					 class="ui big inverted dimmer imaginator-create__dropzone-loader">
 					<div class="ui loader"></div>
 				</div>
 			</div>
@@ -82,6 +84,15 @@
 			<div class="ui container">
 				<div class="imaginator-create__variations">
 					<div class="ui right aligned container" style="margin-bottom: 15px">
+						<button
+							class="ui large positive fluid icon button"
+							:class="{'disabled': !hasAllSources || isSomethingResizing}"
+							style="margin-bottom:15px;"
+							@click="sendFile">
+							<i class="save icon"></i>
+							Uložit a zavřít
+						</button>
+
 						<div class="imaginator-create__select">
 							<button
 								class="imaginator-create__select-all"
@@ -119,35 +130,23 @@
 						</div>
 					</div>
 
-					<button class="fluid large teal ui button"
+					<button class="ui large teal fluid icon button"
 							@click="triggerOpenDropzone"
 							v-if="hasAllSourcesOrImaginatorHasId && !isSomethingResizing"
 							:class="{'disabled': !isSomethingSelected}"
-							style="text-align:left; margin-bottom:15px;">
+							style="margin-bottom:15px;">
 						<i class="folder open icon"></i>
 						Změnit soubor pro @{{ numberOfSelected }} @{{ numberOfSelected > 1 ? 'variace' : 'variaci' }}
 					</button>
 
-					<button class="fluid large teal ui button"
+					<button class="ui large teal fluid icon button"
 							@click="getAllCroppedImages"
-							v-if="isSomethingResizing"
-							style="text-align:left;">
+							v-if="isSomethingResizing">
 						<i class="check icon icon"></i>
 						Ořezat vybrané variace
 					</button>
 
 				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="sixteen wide column center aligned">
-				<button
-						class="large positive ui button"
-						:class="{'disabled': !hasAllSources || isSomethingResizing}"
-						style="margin-top:30px;"
-						@click="sendFile">
-					Uložit a zavřít
-				</button>
 			</div>
 		</div>
 		<div class="ui inverted dimmer" :class="{'active': isSaving}">
