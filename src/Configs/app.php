@@ -46,5 +46,5 @@ return [
 	'allowedPictureAttributes' => [
 		'class',
 		'id',
-	]
+	],
 ];
