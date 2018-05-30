@@ -471,7 +471,7 @@ class ImaginatorLogic extends Controller
 			return $generatedResizePaths;
 
 		} catch (\Exception $e) {
-			return response()->json(['error' => $e->getMessage()], 404);
+			return response()->json(['error' => $e->getMessage()], 500);
 		}
 	}
 
@@ -633,7 +633,7 @@ class ImaginatorLogic extends Controller
 			], 200);
 
 		} catch (\Exception $e) {
-			return response()->json(['error' => $e->getMessage()], 404);
+			return response()->json(['error' => $e->getMessage()], 500);
 		}
 	}
 }
