@@ -47,5 +47,4 @@ return [
 		'class',
 		'id',
 	],
-	'compress_png' => env('IMAGINATOR_COMPRESS_PNG', true),
 ];

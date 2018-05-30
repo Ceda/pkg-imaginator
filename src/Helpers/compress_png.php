@@ -12,21 +12,22 @@ if (!function_exists('compress_png')) {
 	 * @throws Exception
 	 * @return boolean
 	 */
-	function compress_png(string $pathToPngFile, int $maxQuality = 90)
+	function compress_png(string $pathToPngFile, int $maxQuality = null)
 	{
+		if (!$maxQuality) {
+			$maxQuality = config('imaginator.compression.max_quality');
+		}
+
 		if (!file_exists($pathToPngFile)) {
 			throw new Exception('File does not exist: ' . $pathToPngFile);
 		}
 
-		$minQuality = 60;
+		$minQuality = config('imaginator.compression.min_quality');;
 
 		/*
 		 * --== Workaround for MAC start ==--
 		 */
-		$validPngquantLocations = [
-			'/usr/bin/pngquant',
-			'/usr/local/bin/pngquant'
-		];
+		$validPngquantLocations = config('imaginator.compression.valid_pngquant_locations');
 
 		$pngquant = '/usr/bin/pngquant';
 

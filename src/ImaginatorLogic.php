@@ -458,7 +458,7 @@ class ImaginatorLogic extends Controller
 
 				if (
 					strtolower(pathinfo($fullImaginatorFilePath, PATHINFO_EXTENSION)) === 'png'
-					&& config('imaginator.app.compress_png')
+					&& config('imaginator.compression.compress_png')
 				) {
 					compress_png($fullImaginatorFilePath);
 				}
@@ -607,7 +607,7 @@ class ImaginatorLogic extends Controller
 
 				if (
 					strtolower(pathinfo($fullImaginatorFilePath, PATHINFO_EXTENSION)) === 'png'
-					&& config('imaginator.app.compress_png')
+					&& config('imaginator.compression.compress_png')
 				) {
 					compress_png($fullImaginatorFilePath);
 				}
