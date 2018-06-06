@@ -47,4 +47,8 @@ return [
 		'class',
 		'id',
 	],
+	/*
+	 * gd|imagick
+	 */
+	'intervention_driver' => 'imagick',
 ];
