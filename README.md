@@ -237,6 +237,14 @@ Mostly all of the modern browser are supported :).
 
 * Add IE 11 support
 
+## Package
+
+* [Click here for package version management info](https://bitbucket.org/bistroagency/pkg-imaginator/src/master/PACKAGE.md)
+
+## Changelog
+
+* [Click here for changelog](https://bitbucket.org/bistroagency/pkg-imaginator/src/master/CHANGELOG.md)
+
     
 ## Contributing
 
@@ -245,4 +253,5 @@ Mostly all of the modern browser are supported :).
 * The src/assets/dist folder should always be commited to git.
 * Before a commit always compile assets with the `gulp prod` command while in the src/_frontend folder.
 * The final assets should be minified without sourcemaps to achieve the best results.
+* Before merge to master make sure to add proper tag to commit! [Read more](https://bitbucket.org/bistroagency/pkg-imaginator/src/master/PACKAGE.md)
 
