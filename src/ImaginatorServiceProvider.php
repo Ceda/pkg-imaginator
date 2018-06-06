@@ -61,7 +61,7 @@ class ImaginatorServiceProvider extends ServiceProvider
 		 * Set intervention driver
 		 */
 		Image::configure([
-			'driver' => config('imaginator.app.intervention_driver')
+			'driver' => config('imaginator.app.intervention_driver', 'imagick')
 		]);
 	}
 
