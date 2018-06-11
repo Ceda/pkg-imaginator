@@ -375,6 +375,13 @@ class ImaginatorLogic extends Controller
 	}
 
 	//TODO old method, it's going to be removed soon, use generateResizesFromPath and crop by coordinates or anchor point
+
+	/**
+	 * @param $imaginatorId
+	 * @param array $imaginatorSources
+	 * @return array
+	 * @throws \Exception
+	 */
 	protected function generateResizesFromBase($imaginatorId, array $imaginatorSources)
 	{
 		ini_set('memory_limit', '-1');
@@ -471,15 +478,22 @@ class ImaginatorLogic extends Controller
 			return $generatedResizePaths;
 
 		} catch (\Exception $e) {
-			return response()->json(['error' => $e->getMessage()], 500);
+			throw new \Exception($e);
 		}
 	}
 
-	/*
+	/**
 	 * Generic automatization structure, the next few functions are used to make a clearer and simpler
 	 * process while working with Imaginator, removing the need to use the GUI. The following functions
 	 * are going to be used in the cropping process of the GUI after frontend remake. The generateResizesFromBase
 	 * function will be removed.
+	 *
+	 * @param $resources
+	 * @param $imaginator
+	 * @param $imaginatorVariations
+	 * @param $anchorPoint
+	 * @throws
+	 * @return mixed
 	 */
 	protected static function generateResizesFromPath(
 		$resources,
@@ -633,7 +647,7 @@ class ImaginatorLogic extends Controller
 			], 200);
 
 		} catch (\Exception $e) {
-			return response()->json(['error' => $e->getMessage()], 500);
+			throw new \Exception($e);
 		}
 	}
 }
