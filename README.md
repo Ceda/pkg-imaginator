@@ -24,6 +24,7 @@ After that, simply add the package into your "require" section:
 Run composer update
 
     composer update
+ 
     
 ## Usage
 
@@ -109,6 +110,7 @@ This is where the fun truly begins.
  * Now after clicking on the input you should see the Imaginator popping up. Now you are ready to use the Imaginator however you like!
  * CREATE SOMETHING AWESOME!
  
+ 
  ## Getting Images
  
  **Predefined way of getting imaginator Images**
@@ -121,6 +123,7 @@ This is where the fun truly begins.
  * Get lazy load json by calling `get_imaginator((required) int $id)`.
  * To get the `Lazyload Object` you have to execute the `->getLazyloadOjbect()` function which takes `string $locale` as an optional parameter. If you can, always send the locale parameter to the function.
  * Example: `getImaginator(16)->getLazyloadObject()`.
+ 
  
  ## Configuration
  
@@ -194,6 +197,7 @@ return [
 * The keys in the `locales, densities` and `anchor points` settings are used in the `schemas.php` file to generate the templates and variations.
 * To access all the setting variables outside of Imaginator, all you have to do is to call the `config()` helper with the `imaginator.` prefix.
 
+
 ## Viewing files
 
 **After all you'd like to see what images you currently have on your page, right?**
@@ -227,6 +231,7 @@ get_or_create_imaginator([
 ], 'gallery');
 ~~~~
 
+
 ## Browser support
 
 **All the amazing platforms you can run our Imaginator on**
@@ -237,15 +242,17 @@ Mostly all of the modern browser are supported :).
 
 * Add IE 11 support
 
+
 ## Package
 
 * [Click here for package version management info](https://bitbucket.org/bistroagency/pkg-imaginator/src/master/PACKAGE.md)
+
 
 ## Changelog
 
 * [Click here for changelog](https://bitbucket.org/bistroagency/pkg-imaginator/src/master/CHANGELOG.md)
 
-    
+
 ## Contributing
 
 **Please note these few steps while contributing**

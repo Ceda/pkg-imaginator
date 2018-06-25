@@ -1,3 +1,8 @@
+# Version 1.1
+
+* Added cachebuster to generated resizes
+* Exceptions are now returned as an exception not a jsonresponse
+
 # Version 1.0
 
 * Added compression with pngquant support,
