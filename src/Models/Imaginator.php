@@ -61,7 +61,9 @@ class Imaginator extends Model
 			if ($variations[$i]->locale === 'all' || $variations[$i]->locale === $locale) {
 				$breakpoint = config('imaginator.breakpoints.default')[$variations[$i]->breakpoint];
 				$density = $variations[$i]->density;
-				$lazyArray[$breakpoint][$density] = isset($this->imaginator_sources[$i]) ? $this->imaginator_sources[$i]->resized : '';
+				$lazyArray[$breakpoint][$density] = isset($this->imaginator_sources[$i])
+					? imaginator_asset_versioned($this->imaginator_sources[$i]->resized)
+					: '';
 			}
 		}
 
@@ -156,7 +158,7 @@ class Imaginator extends Model
 
 	public static function getImaginator($aliasOrId)
 	{
-		if($aliasOrId instanceof self) {
+		if ($aliasOrId instanceof self) {
 			return $aliasOrId;
 		}
 

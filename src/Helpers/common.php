@@ -11,6 +11,17 @@ if (!function_exists('asset_versioned')) {
 	}
 }
 
+if (!function_exists('imaginator_asset_versioned')) {
+	function imaginator_asset_versioned($path)
+	{
+		if (!\File::exists(public_path($path))) {
+			return $path;
+		}
+
+		return $path . '?' . \File::lastModified(public_path($path));
+	}
+}
+
 if (!function_exists('body_class')) {
 	function body_class()
 	{
