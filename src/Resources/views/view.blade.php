@@ -28,7 +28,7 @@
 
 		<div class="row">
 			<div class="fourteen wide column">
-				<div class="ui small images">
+				<div class="ui images">
 					@foreach($imaginators as $imaginator)
 						<div class="imaginator-view__item">
 							@if(!$imaginator->imaginator_sources->count() && !$imaginator->getPreviewImageUrl())
@@ -43,7 +43,7 @@
 								   class="imaginator-view__item-image"
 								   @click.prevent="exitLightbox({{ $imaginator->id }})"
 								>
-									<img src="{{ $imaginator->getPreviewImageUrl() }}" style="width:auto;">
+									<img src="{{ $imaginator->getPreviewImageUrl() }}">
 								</a>
 							@endif
 							<div class="imaginator-view__item-name">
