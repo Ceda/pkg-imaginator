@@ -238,11 +238,6 @@ get_or_create_imaginator([
 
 Mostly all of the modern browser are supported :).
 
-**--=ToDo=--**
-
-* Add IE 11 support
-
-
 ## Package
 
 * [Click here for package version management info](https://bitbucket.org/bistroagency/pkg-imaginator/src/master/PACKAGE.md)

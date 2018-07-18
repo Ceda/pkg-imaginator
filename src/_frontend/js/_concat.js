@@ -16,8 +16,8 @@ module.exports = {
 		"./node_modules/vue/dist/vue.js",
 		"./node_modules/dropzone/dist/dropzone.js",
 		"./node_modules/lodash/lodash.js",
-		"./node_modules/exif-js/exif.min.js",
-		"./node_modules/croppie/croppie.min.js"
+		"./js/libs/croppie.js",
+		"./js/libs/exif.js"
 	],
 	"libs-imaginator": [
 		"./node_modules/sweetalert2/dist/sweetalert2.min.js"

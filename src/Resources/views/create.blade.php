@@ -149,7 +149,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="ui inverted dimmer" :class="{'active': isSaving}">
+		<div class="ui inverted page dimmer" :class="{'active': isSaving}">
 			<div class="ui text large loader">Ukládám</div>
 		</div>
 	</div>

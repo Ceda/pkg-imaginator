@@ -1,3 +1,8 @@
+# Version 1.2
+
+* Internet Explorer 11 supported
+* Fixed loading dimmers in Safari and IE11
+
 # Version 1.1
 
 * Added cachebuster to generated resizes

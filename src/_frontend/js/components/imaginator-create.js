@@ -193,13 +193,20 @@ const ImaginatorCreate = {
 					_.forEach(this.variations, (variation) => {
 						this.$nextTick(() => {
 							let thumbnail = $('.image-to-crop--' + variation.id);
-							thumbnail.unbind('load');
-							thumbnail.on('load', () => {
+							if (!thumbnail.length) {
+								return;
+							}
+							if (thumbnail[0].complete) {
 								this.numberOfShownThumbnails++;
-								this.$nextTick(() => {
-									thumbnail.unbind('load');
+							} else {
+								thumbnail.unbind('load');
+								thumbnail.on('load', () => {
+									this.numberOfShownThumbnails++;
+									this.$nextTick(() => {
+										thumbnail.unbind('load');
+									});
 								});
-							});
+							}
 						});
 					});
 				},
@@ -207,14 +214,18 @@ const ImaginatorCreate = {
 				waitForShowThumbnailOnResize(variation) {
 					this.$nextTick(() => {
 						let thumbnail = $('.image-to-crop--' + variation.id);
-						thumbnail.unbind('load');
-						this.$set(variation, 'isResizeLoading', true);
-						thumbnail.on('load', () => {
-							this.$nextTick(() => {
-								this.$set(variation, 'isResizeLoading', false);
-								thumbnail.unbind('load');
+						if (thumbnail[0].complete) {
+							this.$set(variation, 'isResizeLoading', false);
+						} else {
+							thumbnail.unbind('load');
+							this.$set(variation, 'isResizeLoading', true);
+							thumbnail.on('load', () => {
+								this.$nextTick(() => {
+									this.$set(variation, 'isResizeLoading', false);
+									thumbnail.unbind('load');
+								});
 							});
-						});
+						}
 					});
 				},
 
@@ -369,6 +380,7 @@ const ImaginatorCreate = {
 					}
 
 					variation.crop = imageToCrop.croppie({
+						type: 'canvas',
 						viewport: cropViewport,
 						enableExif: true,
 					});
