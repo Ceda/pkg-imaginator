@@ -163,9 +163,7 @@ const ImaginatorCreate = {
 
 							this.isLoading = true;
 
-							if (this.numberOfShownThumbnails !== 0) {
-								this.numberOfShownThumbnails = this.variations.length - this.numberOfSelected;
-							}
+							this.numberOfShownThumbnails = 0;
 
 						},
 						success: (dzResponse, uploadResponse) => {
@@ -255,7 +253,7 @@ const ImaginatorCreate = {
 							this.imaginator = response.imaginator;
 							this.imaginatorSources = response.imaginatorSources;
 
-							if(typeof window.parent.swal === 'undefined') {
+							if (typeof window.parent.swal === 'undefined') {
 								return;
 							}
 
