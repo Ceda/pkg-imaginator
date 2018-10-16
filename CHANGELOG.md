@@ -1,6 +1,10 @@
-# Version 1.3
+# Version 1.4
 
 * Doesn't include variations without sources into lazyload object
+
+# Version 1.3
+
+* Fixes forever loading loops
 
 # Version 1.2
 
