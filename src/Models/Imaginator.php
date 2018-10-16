@@ -58,13 +58,18 @@ class Imaginator extends Model
 		$variations = $this->imaginator_template->imaginator_variations;
 
 		for ($i = 0; $i < $variations->count(); $i++) {
+
 			if ($variations[$i]->locale === 'all' || $variations[$i]->locale === $locale) {
+
 				$breakpoint = config('imaginator.breakpoints.default')[$variations[$i]->breakpoint];
 				$density = $variations[$i]->density;
-				$lazyArray[$breakpoint][$density] = isset($this->imaginator_sources[$i])
-					? imaginator_asset_versioned($this->imaginator_sources[$i]->resized)
-					: '';
+
+				if (isset($this->imaginator_sources[$i])) {
+					$lazyArray[$breakpoint][$density] = imaginator_asset_versioned($this->imaginator_sources[$i]->resized);
+				}
+
 			}
+
 		}
 
 		return json_encode($lazyArray);
