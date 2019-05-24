@@ -15,13 +15,27 @@ if (!function_exists('get_imaginator_object')) {
 }
 
 if (!function_exists('get_or_create_imaginator')) {
+	/**
+	 * @param $resources
+	 * @param string $templateName
+	 * @param string $anchorPoint
+	 * @return mixed
+	 * @deprecated
+	 */
 	function get_or_create_imaginator($resources, string $templateName, string $anchorPoint = 'c')
 	{
-		return \Bistroagency\Imaginator\Models\Imaginator::getOrCreateImaginator($resources, $templateName, $anchorPoint);
+		return \Bistroagency\Imaginator\Facades\Imaginator::getOrCreateImaginator($resources, $templateName, $anchorPoint);
 	}
 }
 
 if (!function_exists('generate_imaginator_picture')) {
+	/**
+	 * @param $imaginator
+	 * @param string|null $locale
+	 * @param array $attributes
+	 * @return mixed
+	 * @deprecated
+	 */
 	function generate_imaginator_picture($imaginator, string $locale = null, array $attributes = [])
 	{
 		return \Bistroagency\Imaginator\Facades\Imaginator::generateImaginatorPicture($imaginator, $locale, $attributes);
