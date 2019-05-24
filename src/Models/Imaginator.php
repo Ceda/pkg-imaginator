@@ -6,6 +6,7 @@ use Bistroagency\Imaginator\ImaginatorController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
@@ -17,19 +18,32 @@ class Imaginator extends Model
 	/** @var Collection */
 	protected $imaginators;
 
+	protected $fillable = [
+		'alias',
+		'imaginator_template_id',
+		'imaginatorable_id',
+		'imaginatorable_type',
+	];
+
 	protected $attributes = [
 		'imaginator_template_id' => null,
 		'alias' => null,
 	];
 
-	protected $fillable = [
-		'imaginator_template_id',
-		'alias',
+	protected $casts = [
+		'id' => 'integer',
+		'imaginator_template_id' => 'integer',
+		'imaginatorable_id' => 'integer',
 	];
 
 	/*
 	 * Relationships
 	 */
+
+	public function imaginatorable(): MorphTo
+	{
+		return $this->morphTo();
+	}
 
 	public function imaginator_template(): BelongsTo
 	{
