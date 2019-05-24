@@ -4,12 +4,18 @@ namespace Bistroagency\Imaginator\Models;
 
 use Bistroagency\Imaginator\ImaginatorController;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 
 class Imaginator extends Model
 {
 	use SoftDeletes;
+
+	/** @var Collection */
+	protected $imaginators;
 
 	protected $attributes = [
 		'imaginator_template_id' => null,
@@ -21,7 +27,23 @@ class Imaginator extends Model
 		'alias',
 	];
 
-	protected $imaginators;
+	/*
+	 * Relationships
+	 */
+
+	public function imaginator_template(): BelongsTo
+	{
+		return $this->belongsTo(ImaginatorTemplate::class)->with('imaginator_variations');
+	}
+
+	public function imaginator_sources(): HasMany
+	{
+		return $this->hasMany(ImaginatorSource::class);
+	}
+
+	/*
+	 * Functions
+	 */
 
 	public function getImaginators($fresh = false)
 	{
@@ -38,19 +60,9 @@ class Imaginator extends Model
 		return $this->imaginators;
 	}
 
-	public function imaginator_template()
-	{
-		return $this->belongsTo(ImaginatorTemplate::class)->with('imaginator_variations');
-	}
-
-	public function imaginator_sources()
-	{
-		return $this->hasMany(ImaginatorSource::class);
-	}
-
 	public function getLazyloadObject($locale = null)
 	{
-		if (!$this) {
+		if (!$this->exists) {
 			return json_encode([]);
 		}
 
@@ -75,17 +87,42 @@ class Imaginator extends Model
 		return json_encode($lazyArray);
 	}
 
-	public function isUsed()
+	public function isUsed(): bool
 	{
 		return false;
 	}
 
 	public function getPreviewImageUrl()
 	{
-		return ($this->imaginator_sources->first() && strlen($this->imaginator_sources->first()->source)) ?
-			url($this->imaginator_sources->first()->source) :
-			false;
+		$firstSource = $this->imaginator_sources->first();
+
+		return ($firstSource && $firstSource->source !== '')
+			? url($firstSource->source)
+			: null;
 	}
+
+	public function getVariations(): array
+	{
+		$imagesByVariations = [];
+		$variations = $this->imaginator_template->imaginator_variations;
+
+		for ($i = 0; $i < $variations->count(); $i++) {
+			if ($variations[$i]->locale === 'all' || $variations[$i]->locale === locale()) {
+				$breakpoint = config('imaginator.breakpoints.default')[$variations[$i]->breakpoint];
+				$density = $variations[$i]->density;
+
+				if (isset($this->imaginator_sources[$i])) {
+					$imagesByVariations[$breakpoint][$density] = url(imaginator_asset_versioned($this->imaginator_sources[$i]->resized));
+				}
+			}
+		}
+
+		return $imagesByVariations;
+	}
+
+	/*
+	 * Static
+	 */
 
 	public static function getValidatedPaginated(ImaginatorTemplate $imaginatorTemplate = null, $pagination = 20)
 	{
@@ -176,7 +213,7 @@ class Imaginator extends Model
 
 	public static function generateImaginatorPicture($imaginator, string $locale = null, array $attributes = [])
 	{
-		$imaginator = (new self)->getImaginator($imaginator);
+		$imaginator = self::getImaginator($imaginator);
 
 		if (!$imaginator) {
 			throw new \Exception('Cannot find Imaginator.');
@@ -186,6 +223,7 @@ class Imaginator extends Model
 		}
 		//check if supplied attributes are allowed on the picture tag
 		self::checkAllowedPictureAttributes($attributes);
+
 		$appendableAttributes = [];
 
 		if (!$locale) {
@@ -200,9 +238,7 @@ class Imaginator extends Model
 		}
 
 		//prepare picture opening tag
-		if (!isset($html)) {
-			$html = '<picture ' . implode(' ', $appendableAttributes) . '>';
-		}
+		$html = '<picture ' . implode(' ', $appendableAttributes) . '>';
 
 		//get srcset sizes and imaginator
 		$srcsetSizes = self::getImaginatorSrcsetSizes();
@@ -240,7 +276,7 @@ class Imaginator extends Model
 	protected static function checkAllowedPictureAttributes(array $attributes = [])
 	{
 		foreach ($attributes as $attributeKey => $attribute) {
-			if (!in_array($attributeKey, config('imaginator.app.allowedPictureAttributes'))) {
+			if (!in_array($attributeKey, config('imaginator.app.allowedPictureAttributes'), true)) {
 				throw new \Exception('Unallowed attribute', 500);
 			}
 		}
