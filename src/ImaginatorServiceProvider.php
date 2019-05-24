@@ -5,7 +5,6 @@ namespace Bistroagency\Imaginator;
 use Bistroagency\Imaginator\Commands\CleanFiles;
 use Bistroagency\Imaginator\Commands\Refresh;
 use Bistroagency\Imaginator\Models\Imaginator;
-use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\ServiceProvider;
 
@@ -75,9 +74,7 @@ class ImaginatorServiceProvider extends ServiceProvider
 		/*
 		* Bind Imaginator class
 		*/
-		$this->app->bind('bistroagency-imaginator', function () {
-			return new Imaginator();
-		});
+		$this->app->singleton('imaginator', config('imaginator.app.model'));
 
 		/*
 		* Publish configs.

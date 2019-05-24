@@ -2,7 +2,7 @@
 
 namespace Bistroagency\Imaginator\Models;
 
-use Bistroagency\Imaginator\ImaginatorLogic;
+use Bistroagency\Imaginator\ImaginatorController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\File;
@@ -234,7 +234,7 @@ class Imaginator extends Model
 	{
 		$template = ImaginatorTemplate::where('name', $templateName)->firstOrFail();
 
-		return ImaginatorLogic::getOrCreateImaginator($resources, $template, $anchorPoint);
+		return ImaginatorController::getOrCreateImaginator($resources, $template, $anchorPoint);
 	}
 
 	protected static function checkAllowedPictureAttributes(array $attributes = [])
