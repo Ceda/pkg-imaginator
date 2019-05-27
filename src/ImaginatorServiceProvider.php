@@ -4,7 +4,8 @@ namespace Bistroagency\Imaginator;
 
 use Bistroagency\Imaginator\Commands\CleanFiles;
 use Bistroagency\Imaginator\Commands\Refresh;
-use Bistroagency\Imaginator\Models\Imaginator;
+use Bistroagency\Imaginator\Repositories\ImaginatorRepository;
+use Illuminate\Foundation\AliasLoader;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\ServiceProvider;
 
@@ -15,7 +16,7 @@ class ImaginatorServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function boot()
+	public function boot(): void
 	{
 		/*
 		* Register helpers if needed.
@@ -112,13 +113,13 @@ class ImaginatorServiceProvider extends ServiceProvider
 		/*
 		 * Create aliases for the dependencies.
 		 */
-		$loader = \Illuminate\Foundation\AliasLoader::getInstance();
-		$loader->alias('Image', 'Intervention\Image\Facades\Image');
+		$loader = AliasLoader::getInstance();
+		$loader->alias('Image', Image::class);
 
 		/*
 		 * Register Imaginator repository for getters
 		 */
 		$this->app->singleton('ImaginatorRepository',
-			\Bistroagency\Imaginator\Repositories\ImaginatorRepository::class);
+			ImaginatorRepository::class);
 	}
 }
