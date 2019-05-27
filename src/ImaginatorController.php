@@ -86,13 +86,13 @@ class ImaginatorController extends Controller
 				]);
 			}
 		} else {
-			$imaginator = new Imaginator();
+			$imaginator = get_imaginator_model();
 		}
 
 		$imaginatorSources = $request->filled('imaginator') && $imaginator !== null ? $imaginator->imaginator_sources : [];
 
 		return view('imaginator::create', [
-			'imaginator' => $imaginator ?? new Imaginator(),
+			'imaginator' => $imaginator ?? get_imaginator_model(),
 			'imaginatorTemplate' => $imaginatorTemplate,
 			'imaginatorSources' => $imaginatorSources,
 			'imaginatorsViewUrl' => route(config('imaginator.app.routes.as') . 'view', $imaginatorTemplate->name),
@@ -390,14 +390,13 @@ class ImaginatorController extends Controller
 
 		$identified = is_string($resources) ? $resources : $resources['alias'];
 		$imaginator = Imaginator::getImaginator($identified);
-
 		//if imaginator already exists, return imaginator
 		if ($imaginator) {
 			return $imaginator;
 		}
 
 		//create new imaginator if old doesn't exist
-		$newImaginator = new Imaginator();
+		$newImaginator = get_imaginator_model();
 		$newImaginator->imaginator_template_id = $imaginatorTemplate->id;
 		$newImaginator->alias = is_string($resources) ? $resources : null;
 
