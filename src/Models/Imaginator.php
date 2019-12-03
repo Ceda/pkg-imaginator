@@ -10,291 +10,289 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class Imaginator extends Model
 {
-	use SoftDeletes;
+    use SoftDeletes;
 
-	/** @var Collection */
-	protected $imaginators;
+    /** @var Collection */
+    protected $imaginators;
 
-	protected $fillable = [
-		'alias',
-		'imaginator_template_id',
-		'imaginatorable_id',
-		'imaginatorable_type',
-	];
+    protected $fillable = [
+        'alias',
+        'imaginator_template_id',
+        'imaginatorable_id',
+        'imaginatorable_type',
+    ];
 
-	protected $attributes = [
-		'imaginator_template_id' => null,
-		'alias' => null,
-	];
+    protected $attributes = [
+        'imaginator_template_id' => null,
+        'alias' => null,
+    ];
 
-	protected $casts = [
-		'id' => 'integer',
-		'imaginator_template_id' => 'integer',
-		'imaginatorable_id' => 'integer',
-	];
+    protected $casts = [
+        'id' => 'integer',
+        'imaginator_template_id' => 'integer',
+        'imaginatorable_id' => 'integer',
+    ];
 
-	/*
-	 * Relationships
-	 */
+    /*
+     * Relationships
+     */
 
-	public function imaginatorable(): MorphTo
-	{
-		return $this->morphTo();
-	}
+    public function imaginatorable(): MorphTo
+    {
+        return $this->morphTo();
+    }
 
-	public function imaginator_template(): BelongsTo
-	{
-		return $this->belongsTo(ImaginatorTemplate::class)->with('imaginator_variations');
-	}
+    public function imaginator_template(): BelongsTo
+    {
+        return $this->belongsTo(ImaginatorTemplate::class)->with('imaginator_variations');
+    }
 
-	public function imaginator_sources(): HasMany
-	{
-		return $this->hasMany(ImaginatorSource::class);
-	}
+    public function imaginator_sources(): HasMany
+    {
+        return $this->hasMany(ImaginatorSource::class);
+    }
 
-	/*
-	 * Functions
-	 */
+    /*
+     * Functions
+     */
 
-	public function getImaginators($fresh = false)
-	{
-		if ($fresh) {
-			$this->imaginators = app('ImaginatorRepository')->fresh();
-		}
+    public function getImaginators($fresh = false)
+    {
+        if ($fresh) {
+            $this->imaginators = app('ImaginatorRepository')->fresh();
+        }
 
-		if ($this->imaginators !== null) {
-			return $this->imaginators;
-		}
+        if ($this->imaginators !== null) {
+            return $this->imaginators;
+        }
 
-		$this->imaginators = app('ImaginatorRepository')->get();
+        $this->imaginators = app('ImaginatorRepository')->get();
 
-		return $this->imaginators;
-	}
+        return $this->imaginators;
+    }
 
-	public function getLazyloadObject($locale = null)
-	{
-		if (!$this->exists) {
-			return json_encode([]);
-		}
+    public function getLazyloadObject($locale = null)
+    {
+        if (!$this->exists) {
+            return json_encode([]);
+        }
 
-		$lazyArray = [];
-		$variations = $this->imaginator_template->imaginator_variations;
+        $lazyArray = [];
+        $variations = $this->imaginator_template->imaginator_variations;
 
-		for ($i = 0; $i < $variations->count(); $i++) {
+        for ($i = 0; $i < $variations->count(); $i++) {
+            if ($variations[$i]->locale === 'all' || $variations[$i]->locale === $locale) {
+                $breakpoint = config('imaginator.breakpoints.default')[$variations[$i]->breakpoint];
+                $density = $variations[$i]->density;
 
-			if ($variations[$i]->locale === 'all' || $variations[$i]->locale === $locale) {
+                if (isset($this->imaginator_sources[$i])) {
+                    $lazyArray[$breakpoint][$density] = imaginator_asset_versioned($this->imaginator_sources[$i]->resized);
+                }
+            }
+        }
 
-				$breakpoint = config('imaginator.breakpoints.default')[$variations[$i]->breakpoint];
-				$density = $variations[$i]->density;
+        return json_encode($lazyArray);
+    }
 
-				if (isset($this->imaginator_sources[$i])) {
-					$lazyArray[$breakpoint][$density] = imaginator_asset_versioned($this->imaginator_sources[$i]->resized);
-				}
+    public function isUsed(): bool
+    {
+        return false;
+    }
 
-			}
+    public function getPreviewImageUrl()
+    {
+        $firstSource = $this->imaginator_sources->first();
 
-		}
+        return ($firstSource && $firstSource->source !== '')
+            ? Storage::disk(config('imaginator.app.storage_provider'))->url($firstSource->source)
+            : null;
+    }
 
-		return json_encode($lazyArray);
-	}
+    public function getVariations(): array
+    {
+        $imagesByVariations = [];
+        $variations = $this->imaginator_template->imaginator_variations;
 
-	public function isUsed(): bool
-	{
-		return false;
-	}
+        for ($i = 0; $i < $variations->count(); $i++) {
+            if ($variations[$i]->locale === 'all' || $variations[$i]->locale === locale()) {
+                $breakpoint = config('imaginator.breakpoints.default')[$variations[$i]->breakpoint];
+                $density = $variations[$i]->density;
 
-	public function getPreviewImageUrl()
-	{
-		$firstSource = $this->imaginator_sources->first();
+                if (isset($this->imaginator_sources[$i])) {
+                    $imagesByVariations[$breakpoint][$density] = imaginator_asset_versioned($this->imaginator_sources[$i]->resized);
+                }
+            }
+        }
 
-		return ($firstSource && $firstSource->source !== '')
-			? url($firstSource->source)
-			: null;
-	}
+        return $imagesByVariations;
+    }
 
-	public function getVariations(): array
-	{
-		$imagesByVariations = [];
-		$variations = $this->imaginator_template->imaginator_variations;
+    /*
+     * Static
+     */
 
-		for ($i = 0; $i < $variations->count(); $i++) {
-			if ($variations[$i]->locale === 'all' || $variations[$i]->locale === locale()) {
-				$breakpoint = config('imaginator.breakpoints.default')[$variations[$i]->breakpoint];
-				$density = $variations[$i]->density;
+    public static function getValidatedPaginated(ImaginatorTemplate $imaginatorTemplate = null, $pagination = 20)
+    {
+        $imaginatorsQuery = self
+            ::with([
+                'imaginator_template',
+                'imaginator_sources',
+            ]);
 
-				if (isset($this->imaginator_sources[$i])) {
-					$imagesByVariations[$breakpoint][$density] = url(imaginator_asset_versioned($this->imaginator_sources[$i]->resized));
-				}
-			}
-		}
+        if ($imaginatorTemplate) {
+            $imaginatorsQuery = $imaginatorsQuery->where('imaginator_template_id', $imaginatorTemplate->id);
+        }
 
-		return $imagesByVariations;
-	}
+        foreach ($imaginatorsQuery->get() as $imaginator) {
+            foreach ($imaginator->imaginator_sources as $imaginatorSource) {
 
-	/*
-	 * Static
-	 */
+                $sourceExists = Storage::disk(config('imaginator.app.storage_provider'))->exists($imaginatorSource->source);
+                $resizedExists = Storage::disk(config('imaginator.app.storage_provider'))->exists($imaginatorSource->resized);
 
-	public static function getValidatedPaginated(ImaginatorTemplate $imaginatorTemplate = null, $pagination = 20)
-	{
-		$imaginatorsQuery = self
-			::with([
-				'imaginator_template',
-				'imaginator_sources',
-			]);
+                if (!$resizedExists) {
+                    $imaginatorSource->resized = null;
+                    $imaginatorSource->save();
+                }
 
-		if ($imaginatorTemplate) {
-			$imaginatorsQuery = $imaginatorsQuery->where('imaginator_template_id', $imaginatorTemplate->id);
-		}
+                if ($sourceExists) {
+                    continue;
+                }
 
-		foreach ($imaginatorsQuery->get() as $imaginator) {
-			foreach ($imaginator->imaginator_sources as $imaginatorSource) {
-				$sourcePath = str_replace('//', '/', public_path($imaginatorSource->source));
-				$resizedPath = str_replace('//', '/', public_path($imaginatorSource->resized));
+                $imaginatorSource->delete();
+            }
+        }
 
-				if (!File::exists($resizedPath)) {
-					$imaginatorSource->resized = null;
-					$imaginatorSource->save();
-				}
+        return $imaginatorsQuery->paginate($pagination);
+    }
 
-				if (File::exists($sourcePath) && !File::isDirectory($sourcePath)) {
-					continue;
-				}
+    public static function getValidated($imaginator_id)
+    {
+        $imaginatorQuery = self
+            ::with([
+                'imaginator_sources',
+            ])
+            ->where('id', $imaginator_id);
 
-				$imaginatorSource->delete();
-			}
-		}
+        if (!$imaginatorQuery->first()) {
+            return false;
+        }
 
-		return $imaginatorsQuery->paginate($pagination);
-	}
+        foreach ($imaginatorQuery->first()->imaginator_sources as $imaginatorSource) {
+            $sourceExists = Storage::disk(config('imaginator.app.storage_provider'))->exists($imaginatorSource->source);
+            $resizedExists = Storage::disk(config('imaginator.app.storage_provider'))->exists($imaginatorSource->resized);
 
-	public static function getValidated($imaginator_id)
-	{
-		$imaginatorQuery = self
-			::with([
-				'imaginator_sources',
-			])
-			->where('id', $imaginator_id);
+            if (!$resizedExists) {
+                $imaginatorSource->resized = null;
+                $imaginatorSource->save();
+            }
 
-		if (!$imaginatorQuery->first()) {
-			return false;
-		}
+            if ($sourceExists) {
+                continue;
+            }
 
-		foreach ($imaginatorQuery->first()->imaginator_sources as $imaginatorSource) {
-			$sourcePath = str_replace('//', '/', public_path($imaginatorSource->source));
-			$resizedPath = str_replace('//', '/', public_path($imaginatorSource->resized));
+            $imaginatorSource->delete();
+        }
 
-			if (!File::exists($resizedPath)) {
-				$imaginatorSource->resized = null;
-				$imaginatorSource->save();
-			}
+        return $imaginatorQuery->first();
+    }
 
-			if (File::exists($sourcePath) && !File::isDirectory($sourcePath)) {
-				continue;
-			}
+    public static function getImaginatorSrcsetSizes()
+    {
+        $breakpointSizes = config('imaginator.breakpoints.default_sizes');
+        $sizes = [];
+        foreach ($breakpointSizes as $breakpointName => $breakpointSize) {
+            $sizes[$breakpointName] = '(min-width: ' . $breakpointSize . ')';
+        }
+        return $sizes;
+    }
 
-			$imaginatorSource->delete();
-		}
+    public static function getImaginator($aliasOrId)
+    {
+        if ($aliasOrId instanceof self) {
+            return $aliasOrId;
+        }
 
-		return $imaginatorQuery->first();
-	}
+        if (!is_string($aliasOrId)) {
+            return (new static)->getImaginators()->find($aliasOrId);
+        }
 
-	public static function getImaginatorSrcsetSizes()
-	{
-		$breakpointSizes = config('imaginator.breakpoints.default_sizes');
-		$sizes = [];
-		foreach ($breakpointSizes as $breakpointName => $breakpointSize) {
-			$sizes[$breakpointName] = '(min-width: ' . $breakpointSize . ')';
-		}
-		return $sizes;
-	}
+        return (new static)->getImaginators()->where('alias', $aliasOrId)->first();
+    }
 
-	public static function getImaginator($aliasOrId)
-	{
-		if ($aliasOrId instanceof self) {
-			return $aliasOrId;
-		}
+    public static function generateImaginatorPicture($imaginator, string $locale = null, array $attributes = [])
+    {
+        $imaginator = self::getImaginator($imaginator);
 
-		if (!is_string($aliasOrId)) {
-			return (new static)->getImaginators()->find($aliasOrId);
-		}
+        if (!$imaginator) {
+            throw new \Exception('Cannot find Imaginator.');
+        }
+        if ($imaginator->imaginator_sources->count() < 1) {
+            throw new \Exception('Imaginator without sources');
+        }
+        //check if supplied attributes are allowed on the picture tag
+        self::checkAllowedPictureAttributes($attributes);
 
-		return (new static)->getImaginators()->where('alias', $aliasOrId)->first();
-	}
+        $appendableAttributes = [];
 
-	public static function generateImaginatorPicture($imaginator, string $locale = null, array $attributes = [])
-	{
-		$imaginator = self::getImaginator($imaginator);
+        if (!$locale) {
+            $locale = locale();
+        }
 
-		if (!$imaginator) {
-			throw new \Exception('Cannot find Imaginator.');
-		}
-		if ($imaginator->imaginator_sources->count() < 1) {
-			throw new \Exception('Imaginator without sources');
-		}
-		//check if supplied attributes are allowed on the picture tag
-		self::checkAllowedPictureAttributes($attributes);
+        foreach ($attributes as $attributeKey => $attribute) {
+            if (!isset($attributes[$attributeKey]) || !is_string($attribute)) {
+                $attributes[$attributeKey] = null;
+            }
+            $appendableAttributes[] = $attributeKey . '="' . $attribute . '"';
+        }
 
-		$appendableAttributes = [];
+        //prepare picture opening tag
+        $html = '<picture ' . implode(' ', $appendableAttributes) . '>';
 
-		if (!$locale) {
-			$locale = locale();
-		}
+        //get srcset sizes and imaginator
+        $srcsetSizes = self::getImaginatorSrcsetSizes();
 
-		foreach ($attributes as $attributeKey => $attribute) {
-			if (!isset($attributes[$attributeKey]) || !is_string($attribute)) {
-				$attributes[$attributeKey] = null;
-			}
-			$appendableAttributes[] = $attributeKey . '="' . $attribute . '"';
-		}
+        //get lazyload array
+        $lazyloadArray = json_decode($imaginator->getLazyloadObject($locale), true);
 
-		//prepare picture opening tag
-		$html = '<picture ' . implode(' ', $appendableAttributes) . '>';
+        //prepare picture sources and html markup
+        foreach ($lazyloadArray as $breakpoint => $lazyloadImage) {
+            $sources = [];
+            foreach ($lazyloadImage as $imageKey => $image) {
+                if ($imageKey === 'retina') {
+                    $sources[] = url($image) . ' 2x';
+                    continue;
+                }
+                $sources[] = url($image) . ' 1x';
+            }
+            $html .= '<source srcset="' . implode(',', $sources) . '" media="' . $srcsetSizes[$breakpoint] . '">';
+        }
+        //use srcset instead of src on img tag because of polyfill compatibility
+        $html .= '<img srcset="' . url($imaginator->imaginator_sources[0]->source) . '" alt="' . $imaginator->id . '">';
+        $html .= '</picture>';
 
-		//get srcset sizes and imaginator
-		$srcsetSizes = self::getImaginatorSrcsetSizes();
+        //return one picture
+        return $html;
+    }
 
-		//get lazyload array
-		$lazyloadArray = json_decode($imaginator->getLazyloadObject($locale), true);
+    public static function getOrCreateImaginator($resources, string $templateName, string $anchorPoint)
+    {
+        $template = ImaginatorTemplate::where('name', $templateName)->firstOrFail();
 
-		//prepare picture sources and html markup
-		foreach ($lazyloadArray as $breakpoint => $lazyloadImage) {
-			$sources = [];
-			foreach ($lazyloadImage as $imageKey => $image) {
-				if ($imageKey === 'retina') {
-					$sources[] = url($image) . ' 2x';
-					continue;
-				}
-				$sources[] = url($image) . ' 1x';
-			}
-			$html .= '<source srcset="' . implode(',', $sources) . '" media="' . $srcsetSizes[$breakpoint] . '">';
-		}
-		//use srcset instead of src on img tag because of polyfill compatibility
-		$html .= '<img srcset="' . url($imaginator->imaginator_sources[0]->source) . '" alt="' . $imaginator->id . '">';
-		$html .= '</picture>';
+        return ImaginatorController::getOrCreateImaginator($resources, $template, $anchorPoint);
+    }
 
-		//return one picture
-		return $html;
-	}
+    protected static function checkAllowedPictureAttributes(array $attributes = [])
+    {
+        foreach ($attributes as $attributeKey => $attribute) {
+            if (!in_array($attributeKey, config('imaginator.app.allowedPictureAttributes'), true)) {
+                throw new \Exception('Unallowed attribute', 500);
+            }
+        }
 
-	public static function getOrCreateImaginator($resources, string $templateName, string $anchorPoint)
-	{
-		$template = ImaginatorTemplate::where('name', $templateName)->firstOrFail();
-
-		return ImaginatorController::getOrCreateImaginator($resources, $template, $anchorPoint);
-	}
-
-	protected static function checkAllowedPictureAttributes(array $attributes = [])
-	{
-		foreach ($attributes as $attributeKey => $attribute) {
-			if (!in_array($attributeKey, config('imaginator.app.allowedPictureAttributes'), true)) {
-				throw new \Exception('Unallowed attribute', 500);
-			}
-		}
-
-		return true;
-	}
+        return true;
+    }
 }

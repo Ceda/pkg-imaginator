@@ -153,7 +153,6 @@
 			<div class="ui text large loader">Ukládám</div>
 		</div>
 	</div>
-
 @endsection
 
 @section('scripts')
@@ -163,7 +162,6 @@
 		ImaginatorCreate.variationsFromPHP = JSON.parse('{!! addslashes(json_encode($imaginatorTemplate->imaginator_variations->toArray())) !!}');
 		ImaginatorCreate.imaginatorFromPHP = JSON.parse('{!! addslashes(json_encode($imaginator)) !!}');
 		ImaginatorCreate.sourcesFromPHP = JSON.parse('{!! addslashes(json_encode($imaginatorSources)) !!}');
-
 		$(document).ready(function () {
 			ImaginatorCreate.init();
 		});

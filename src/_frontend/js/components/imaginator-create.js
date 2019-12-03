@@ -296,13 +296,13 @@ const ImaginatorCreate = {
 						return false;
 					}
 					if (!imaginatorSource.resized) {
-						return this.appUrl + '/' + imaginatorSource.source;
+						return imaginatorSource.source;
 					}
 					if (imaginatorSource.resized.indexOf('base64') !== -1) {
 						return imaginatorSource.resized;
 					}
 
-					return this.appUrl + '/' + imaginatorSource.resized;
+					return imaginatorSource.resized;
 				},
 
 				triggerOpenDropzone() {
@@ -334,7 +334,7 @@ const ImaginatorCreate = {
 					let sourceToChange = _.find(this.imaginatorSources, {imaginator_variation_id: variation.id});
 
 					if (sourceToChange) {
-						imageToCrop.attr('src', this.appUrl + '/' + sourceToChange.source);
+						imageToCrop.attr('src', sourceToChange.source);
 						if (event) {
 							this.$nextTick(() => {
 								this.waitForShowThumbnailOnResize(variation);
