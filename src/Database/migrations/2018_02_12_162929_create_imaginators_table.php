@@ -17,16 +17,16 @@ class CreateImaginatorsTable extends Migration
             $table->increments('id');
             $table->integer('imaginator_template_id')->unsigned()->nullable();
             $table->foreign('imaginator_template_id')
-				->references('id')
-				->on('imaginator_templates')
-				->onDelete('cascade');
+        ->references('id')
+        ->on('imaginator_templates')
+        ->onDelete('cascade');
             $table->string('alias')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
     }
 
-	/**
+  /**
      * Reverse the migrations.
      *
      * @return void

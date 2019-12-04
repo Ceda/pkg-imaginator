@@ -24,12 +24,12 @@
 
 module.exports = {
 
-	map: {
-		//
-	},
+  map: {
+    //
+  },
 
-	afterCopyCallback() {
-		// Pokud je třeba zasáhnout do zkopírovaných souborů, zde je prostor
-	}
+  afterCopyCallback() {
+    // Pokud je třeba zasáhnout do zkopírovaných souborů, zde je prostor
+  }
 
 };

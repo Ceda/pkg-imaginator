@@ -1,10 +1,10 @@
 {
-	"PROXY": "localhost/bistro/app",
-	"PROXY_OPEN": "false",
-	"DISABLE_MINIFY_NOTIFIER": false,
-	"browsersync": {
-		"clicks": false,
-		"forms": false,
-		"scroll": false
-	}
+  "PROXY": "localhost/bistro/app",
+  "PROXY_OPEN": "false",
+  "DISABLE_MINIFY_NOTIFIER": false,
+  "browsersync": {
+    "clicks": false,
+    "forms": false,
+    "scroll": false
+  }
 }

@@ -7,22 +7,22 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ImaginatorTemplate extends Model
 {
-	use SoftDeletes;
+  use SoftDeletes;
 
-	protected $fillable = [
-		'name',
-		'label',
-		'description',
-		'deleted_at',
-	];
+  protected $fillable = [
+    'name',
+    'label',
+    'description',
+    'deleted_at',
+  ];
 
-	public function imaginator_variations()
-	{
-		return $this->hasMany(ImaginatorVariation::class);
-	}
+  public function imaginator_variations()
+  {
+    return $this->hasMany(ImaginatorVariation::class);
+  }
 
-	public function imaginators()
-	{
-		return $this->hasMany(Imaginator::class);
-	}
+  public function imaginators()
+  {
+    return $this->hasMany(Imaginator::class);
+  }
 }

@@ -4,23 +4,23 @@ namespace Bistroagency\Imaginator\Repositories;
 
 abstract class Repository
 {
-	protected $collection = false;
+  protected $collection = false;
 
-	public function get()
-	{
-		if ($this->collection === false) {
-			$this->collection = $this->collect();
-		}
+  public function get()
+  {
+    if ($this->collection === false) {
+      $this->collection = $this->collect();
+    }
 
-		return $this->collection;
-	}
+    return $this->collection;
+  }
 
-	public function fresh()
-	{
-		$this->collection = $this->collect();
+  public function fresh()
+  {
+    $this->collection = $this->collect();
 
-		return $this->collection;
-	}
+    return $this->collection;
+  }
 
-	abstract protected function collect();
+  abstract protected function collect();
 }

@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Facade;
  */
 class Imaginator extends Facade
 {
-	protected static function getFacadeAccessor(): string
-	{
-		return 'imaginator';
-	}
+  protected static function getFacadeAccessor(): string
+  {
+    return 'imaginator';
+  }
 }

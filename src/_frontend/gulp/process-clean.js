@@ -3,26 +3,26 @@ var gulp = require('gulp');
 var del = require('del');
 
 function processClean(admin = false) {
-	let toDelete = [
-		vars.BUILD_PATH + "/**/*",
-		'./sass/_generated/**/*'
-	];
+  let toDelete = [
+    vars.BUILD_PATH + "/**/*",
+    './sass/_generated/**/*'
+  ];
 
-	if (admin) {
-		toDelete = [
-			vars.BUILD_PATH + "/../admin/dist"
-		];
-	}
+  if (admin) {
+    toDelete = [
+      vars.BUILD_PATH + "/../admin/dist"
+    ];
+  }
 
-	return del(toDelete, {
-		force: true
-	});
+  return del(toDelete, {
+    force: true
+  });
 }
 
 gulp.task('clean', function () {
-	processClean(false);
+  processClean(false);
 });
 
 gulp.task('clean-admin', function () {
-	processClean(true);
+  processClean(true);
 });

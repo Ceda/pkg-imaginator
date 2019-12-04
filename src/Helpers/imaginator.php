@@ -8,7 +8,7 @@
  */
 function get_imaginator(int $id)
 {
-	return \Bistroagency\Imaginator\Facades\Imaginator::getImaginator($id);
+  return \Bistroagency\Imaginator\Facades\Imaginator::getImaginator($id);
 }
 
 /**
@@ -19,7 +19,7 @@ function get_imaginator(int $id)
  */
 function get_imaginator_object(int $id)
 {
-	return \Bistroagency\Imaginator\Facades\Imaginator::getImaginator($id)->getLazyloadObject(locale());
+  return \Bistroagency\Imaginator\Facades\Imaginator::getImaginator($id)->getLazyloadObject(locale());
 }
 
 /**
@@ -33,7 +33,7 @@ function get_imaginator_object(int $id)
  */
 function get_or_create_imaginator($resources, string $templateName, string $anchorPoint = 'c')
 {
-	return \Bistroagency\Imaginator\Facades\Imaginator::getOrCreateImaginator($resources, $templateName, $anchorPoint);
+  return \Bistroagency\Imaginator\Facades\Imaginator::getOrCreateImaginator($resources, $templateName, $anchorPoint);
 }
 
 /**
@@ -47,7 +47,7 @@ function get_or_create_imaginator($resources, string $templateName, string $anch
  */
 function generate_imaginator_picture($imaginator, string $locale = null, array $attributes = [])
 {
-	return \Bistroagency\Imaginator\Facades\Imaginator::generateImaginatorPicture($imaginator, $locale, $attributes);
+  return \Bistroagency\Imaginator\Facades\Imaginator::generateImaginatorPicture($imaginator, $locale, $attributes);
 }
 
 /**
@@ -57,21 +57,21 @@ function generate_imaginator_picture($imaginator, string $locale = null, array $
  */
 function make_imaginator_path(array $parameters, $glue = '/')
 {
-	return implode($glue, $parameters);
+  return implode($glue, $parameters);
 }
 
 if (!function_exists('dummy_image')) {
-	/**
-	 * Create dummy image
-	 *
-	 * @param $width
-	 * @param $height
-	 * @return string
-	 */
-	function dummy_image($width, $height)
-	{
-		return route(config('imaginator.app.routes.as') . 'dummy-image', ['width' => $width, 'height' => $height]);
-	}
+  /**
+   * Create dummy image
+   *
+   * @param $width
+   * @param $height
+   * @return string
+   */
+  function dummy_image($width, $height)
+  {
+    return route(config('imaginator.app.routes.as') . 'dummy-image', ['width' => $width, 'height' => $height]);
+  }
 }
 
 /**
@@ -83,11 +83,11 @@ if (!function_exists('dummy_image')) {
 
 function get_imaginator_model()
 {
-	$class = config('imaginator.app.model');
+  $class = config('imaginator.app.model');
 
-	if (class_exists($class)) {
-		return new $class;
-	}
+  if (class_exists($class)) {
+    return new $class;
+  }
 
-	throw new \Exception('Model couldn\'t be located');
+  throw new \Exception('Model couldn\'t be located');
 }

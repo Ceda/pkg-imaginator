@@ -13,41 +13,41 @@ var sourcemaps = require('gulp-sourcemaps');
 
 function processSass (admin = false) {
 
-	var semanticCoreFiles = !admin ? '/sass/**/build_**.**' : '/admin/sass/**/build_**.**',
-		semanticSectionsFiles = !admin ? '/sass/sections/**.**' : '/admin/sass/sections/**.**',
-		buildDestFolder = !admin ? '/css' : '/../admin/dist/css';
+  var semanticCoreFiles = !admin ? '/sass/**/build_**.**' : '/admin/sass/**/build_**.**',
+    semanticSectionsFiles = !admin ? '/sass/sections/**.**' : '/admin/sass/sections/**.**',
+    buildDestFolder = !admin ? '/css' : '/../admin/dist/css';
 
-	var sassFiles = [
-		vars.SOURCE_PATH + semanticCoreFiles,
-		vars.SOURCE_PATH + semanticSectionsFiles
-	];
+  var sassFiles = [
+    vars.SOURCE_PATH + semanticCoreFiles,
+    vars.SOURCE_PATH + semanticSectionsFiles
+  ];
 
-	var isProduction = process.env.NODE_ENV === 'production';
+  var isProduction = process.env.NODE_ENV === 'production';
 
-	return gulp.src(sassFiles)
-		.pipe(plumber())
-		.pipe(gulpIf(!isProduction, sourcemaps.init()))
-		.pipe(sass({includePaths: vars.includePaths}))
-		.on('error', vars.swallowSassError)
-		.pipe(autoprefixer({
-			browsers: ['last 5 versions', 'ie >= 11'],
-			cascade: false
-		}))
-		.pipe(preprocess({context: {TIMESTAMP: Date.now()}}))
-		.pipe(gulpIf(isProduction, cleanCSS())) //{compatibility: 'ie8'}
-		.pipe(rename(function (path) {
-			path.dirname = '';
-			path.basename = path.basename.replace('build_', '');
-		}))
-		.pipe(gulpIf(!isProduction, sourcemaps.write()))
-		.pipe(gulp.dest(vars.BUILD_PATH + buildDestFolder))
-		.pipe(vars.browserSync.stream());
+  return gulp.src(sassFiles)
+    .pipe(plumber())
+    .pipe(gulpIf(!isProduction, sourcemaps.init()))
+    .pipe(sass({includePaths: vars.includePaths}))
+    .on('error', vars.swallowSassError)
+    .pipe(autoprefixer({
+      browsers: ['last 5 versions', 'ie >= 11'],
+      cascade: false
+    }))
+    .pipe(preprocess({context: {TIMESTAMP: Date.now()}}))
+    .pipe(gulpIf(isProduction, cleanCSS())) //{compatibility: 'ie8'}
+    .pipe(rename(function (path) {
+      path.dirname = '';
+      path.basename = path.basename.replace('build_', '');
+    }))
+    .pipe(gulpIf(!isProduction, sourcemaps.write()))
+    .pipe(gulp.dest(vars.BUILD_PATH + buildDestFolder))
+    .pipe(vars.browserSync.stream());
 }
 
 gulp.task('sass', function () {
-	processSass(false);
+  processSass(false);
 });
 
 gulp.task('sass-admin', function () {
-	processSass(true);
+  processSass(true);
 });
